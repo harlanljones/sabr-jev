@@ -1,0 +1,9 @@
+.env*
+deps/
+_build/
+data/lahman/
+data/*.csv.zip
+data/parquet/
+*.db
+*.sqlite3
+/tmp/
