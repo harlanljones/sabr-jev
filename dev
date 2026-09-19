@@ -142,10 +142,12 @@ doctor() {
     [ -x "$HOME/.hermes/agent-hooks/$h" ] || { echo "MISSING: hook script $h"; fail=1; }
   done
   [ "${fail:-0}" -eq 0 ] && echo "ok: all hook scripts executable"
-  if command -v mix >/dev/null 2>&1 && command -v elixir >/dev/null 2>&1; then
-    echo "ok: elixir ($(elixir --version | grep Elixir))"
+  if mix --version >/dev/null 2>&1; then
+    echo "ok: $(mix --version 2>/dev/null | head -1)"
+  elif command -v elixir >/dev/null 2>&1; then
+    echo "BROKEN: elixir shim present but no version set (mise use elixir@<ver>)"; fail=1
   else
-    echo "MISSING: elixir/erlang toolchain (mix) — formatter hook no-ops until installed"
+    echo "MISSING: elixir/erlang toolchain (mix) — formatter hook no-ops until installed"; fail=1
   fi
   [ -f mix.exs ] || echo "hint: greenfield — no mix.exs yet; scaffold with 'mix new' / 'mix phx.new'"
   echo "note: hook allowlist is per-profile — first session start may prompt, or run: hermes --profile $PROFILE --accept-hooks (once)"
