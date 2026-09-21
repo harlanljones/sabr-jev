@@ -14,3 +14,5 @@ __pycache__/
 
 /priv/static/assets/
 /priv/static/cache_manifest.json
+
+erl_crash.dump
