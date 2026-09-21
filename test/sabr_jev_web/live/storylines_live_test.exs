@@ -47,10 +47,10 @@ defmodule SabrJevWeb.StorylinesLiveTest do
     assert has_element?(view, "[data-filter-note]", "Showing 7 of 24")
   end
 
-  test "storyline links open the card in the workbench", %{conn: conn} do
+  test "storyline links navigate to the card in the workbench", %{conn: conn} do
     {:ok, view, _html} = live(conn, "/storylines")
 
-    assert {:error, {:redirect, %{to: "/?card=" <> _}}} =
+    assert {:error, {:live_redirect, %{to: "/?card=batter%3Aacunaro01%3A2023"}}} =
              view |> element("[data-storyline='batter:acunaro01:2023']") |> render_click()
 
     {:ok, workbench, _html} = live(conn, "/?card=batter:acunaro01:2023")

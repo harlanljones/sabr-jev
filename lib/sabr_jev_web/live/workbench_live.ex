@@ -69,12 +69,10 @@ defmodule SabrJevWeb.WorkbenchLive do
   end
 
   def handle_event("select-card", %{"id" => id}, socket) do
-    case socket.assigns.catalog && Catalog.get(socket.assigns.catalog, id) do
-      {:ok, card} ->
-        {:noreply, assign_card(socket, card["id"])}
-
-      _ ->
-        {:noreply, socket}
+    if socket.assigns.catalog && match?({:ok, _}, Catalog.get(socket.assigns.catalog, id)) do
+      {:noreply, push_navigate(socket, to: ~p"/?card=#{id}")}
+    else
+      {:noreply, socket}
     end
   end
 
@@ -180,15 +178,14 @@ defmodule SabrJevWeb.WorkbenchLive do
         </p>
         <ul aria-label="Player seasons" class="card-picker">
           <li :for={card <- filter_cards(assigns)}>
-            <button
-              type="button"
-              phx-click="select-card"
-              phx-value-id={card["id"]}
+            <.link
+              class="picker-link"
+              navigate={~p"/?card=#{card["id"]}"}
               data-card-id={card["id"]}
               aria-pressed={@card && @card["id"] == card["id"]}
             >
               {card["player_name"]} · {card["year"]}
-            </button>
+            </.link>
           </li>
         </ul>
       </section>
