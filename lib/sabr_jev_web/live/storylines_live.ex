@@ -56,6 +56,8 @@ defmodule SabrJevWeb.StorylinesLive do
           {" | "}
           <a href={~p"/storylines"} aria-current="page">Storylines</a>
           {" | "}
+          <a href={~p"/backtest"}>Backtest</a>
+          {" | "}
           <a href={~p"/about"}>About &amp; formulas</a>
         </nav>
       </header>
@@ -67,7 +69,13 @@ defmodule SabrJevWeb.StorylinesLive do
       </section>
 
       <section :if={!@load_error} aria-label="Storyline selection">
-        <form phx-change="filter" class="filters" data-filters="true" aria-label="Filter storylines">
+        <form
+          phx-change="filter"
+          id="storyline-filters"
+          class="filters"
+          data-filters="true"
+          aria-label="Filter storylines"
+        >
           <label>
             Position
             <select name="filter[position]" data-facet="position">

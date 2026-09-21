@@ -90,6 +90,59 @@ defmodule SabrJev.Storylines do
       card_id: "pitcher:verlaju01:2022",
       team: "HOU",
       hook: "A no-hitter and a Cy Young, one year before the elbow."
+    },
+    %{
+      card_id: "batter:semiema01:2021",
+      team: "TOR",
+      hook: "45 homers and 159 RBI out of the leadoff spot."
+    },
+    %{
+      card_id: "batter:altuvjo01:2022",
+      team: "HOU",
+      hook: "A batting title after the scandal year."
+    },
+    %{
+      card_id: "batter:turnetr01:2023",
+      team: "PHI",
+      hook: "A .337 Triple Crown flirt in the Phillies debut."
+    },
+    %{
+      card_id: "batter:rodriju01:2023",
+      team: "SEA",
+      hook: "30/30 as a rookie; the barrel met the truss."
+    },
+    %{
+      card_id: "batter:carroco02:2023",
+      team: "ARI",
+      hook: "ROY in a pennant race. Then the hangover."
+    },
+    %{
+      card_id: "batter:bogaexa01:2022",
+      team: "BOS",
+      hook: "The quiet All-Star farewell in Boston."
+    },
+    %{card_id: "pitcher:valdefr01:2022", team: "HOU", hook: "25 straight quality starts."},
+    %{
+      card_id: "pitcher:kershcl01:2022",
+      team: "LAD",
+      hook: "An ERA title at 34, his last run in LA."
+    },
+    %{
+      card_id: "pitcher:steelju01:2023",
+      team: "CHC",
+      hook: "From waiver-depth lefty to Cy Young runner-up."
+    },
+    %{card_id: "pitcher:webblo01:2023", team: "SF", hook: "216 hits allowed, and still an ace."},
+    %{
+      card_id: "pitcher:imanash01:2024",
+      team: "CHC",
+      hook: "A 1.00 ERA April, transplanted intact."
+    },
+    %{card_id: "pitcher:galleza01:2023", team: "ARI", hook: "A 2.24 ERA ace on a pennant ride."},
+    %{
+      card_id: "pitcher:degroja01:2020",
+      team: "NYM",
+      hook: "Angry Jacob: 1.69 FIP and 104 K in 68 innings."
     }
   ]
 

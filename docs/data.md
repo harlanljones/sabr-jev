@@ -2,10 +2,10 @@
 
 | Item | Value |
 |---|---|
-| Artifact | `priv/data/cards.json` (`schema_version: 1`, 37 cards, byte-identical rebuilds) |
+| Artifact | `priv/data/cards.json` (`schema_version: 1`, 50 cards, byte-identical rebuilds) |
 | Inputs | 4 Lahman tables (128598 / 57630 / 3614 / 24270 rows) + 155-season frozen wOBA weights |
 | Latest season | 2025 · scope AL/NL · formula `sabr-jev-v1` |
-| Recordings | 35 immutable (`priv/jev/recordings/`): 30 with retrospective oracle Noul, 4 qualified 2025 Choice/Score-only, Strider 2023 (2024 sample too small for oracle) |
+| Recordings | 48 immutable (`priv/jev/recordings/`): 43 with retrospective oracle Noul, 4 qualified 2025 Choice/Score-only, Strider 2023 (2024 sample too small for oracle) |
 | License | Lahman CC-BY-SA-3.0 (SABR/Sean Lahman); weights are third-party constants, not project-owned |
 
 ## Commands (Python standard library only)
@@ -284,7 +284,7 @@ not change judgment state, even if next-season counts are changed.
 
 ## Demonstration selection and prospective limits
 
-`data/catalog.json` selects 37 real cards: nineteen batter, eighteen pitcher, 2020-2025.
+`data/catalog.json` selects 50 real cards: twenty-five of each role, 2020-2025.
 Names and IDs were checked in the pinned CSVs. Arozarena 2024 merges TBA/SEA;
 Gregory Soto 2024 merges PHI/NL and BAL/AL, exercising cross-league cFIP weighting.
 Mike Trout 2024 (126 PA) and Jacob deGrom 2024 (32 outs / 3 IP) demonstrate

@@ -21,20 +21,19 @@ prospective evaluation protocol instead of vibes.
 
 ## Results
 
-Thirty-seven real cards from pinned Lahman inputs; thirty-five immutable Jev
-recordings; every latch route computed from frozen artifacts, never invented.
-Explore them as stories at `/storylines`, or card by card in the workbench.
+ Fifty real cards from pinned Lahman inputs; 48 immutable Jev recordings; every latch route computed from frozen artifacts, never invented. Explore them as stories at `/storylines`, card by card in the workbench, and check the model against reality at `/backtest`.
 
 | Slice | Detail |
 |---|---|
-| Cards | 37 (19 batter, 18 pitcher, seasons 2020–2025) |
-| Recordings | 35 (30 with retrospective oracle Noul; 2025s Choice/Score-only; Strider 2023 has no oracle — 7 outs in 2024) |
+| Cards | 50 (25 batter, 25 pitcher, seasons 2020–2025) |
+| Recordings | 48 (43 with retrospective oracle Noul; 2025s Choice/Score-only; Strider 2023 has no oracle — 7 outs in 2024) |
 | Unrecorded | Trout 2024, deGrom 2024 (underqualified demos — honest empty states) |
-| Routes | 4 act · 9 review · 22 escalate — the gate stays skeptical; act requires every Choice/Score ≥ 0.65 |
+| Routes (v3 mean-aggregation) | 28 act · 17 review · 2 escalate — act = mean Choice/Score ≥ 0.65; per-answer probabilities stay visible |
+| Backtest (retrospective) | 43 scored pairs: batter Brier 0.305 vs baseline 0.250; pitcher 0.280 vs 0.250 — no edge honestly claimed |
 
 | Check | Result |
 |---|---|
-| Offline Elixir suite (`mix test`, no API key) | 101 passed |
+| Offline Elixir suite (`mix test`, no API key) | 111 passed |
 | Python ETL + metric suite | 23 passed |
 | `mix format --check-formatted`, `mix compile --warnings-as-errors` | clean |
 | ETL rebuild of `priv/data/cards.json` | byte-identical |
@@ -47,7 +46,8 @@ Explore them as stories at `/storylines`, or card by card in the workbench.
 | Who | Flow |
 |---|---|
 | Fan / analyst | Pick Batter\|Pitcher → player-season → read the card; the latch banner tells you whether the Jev read is actable, worth review, or escalated — with full probabilities, never a single bold claim under review |
-| Story explorer | Start at `/storylines`: twenty famous 2021–2025 seasons with hook lines and real verdict chips, filtered by breakout/regression lenses, deep-linked into the workbench |
+| Story explorer | Start at `/storylines`: 37 famous 2020–2025 seasons with hook lines and real verdict chips, filtered by position/season/verdict, deep-linked into the workbench |
+| Skeptic / auditor | Read `/backtest`: every recorded next-season projection scored against what actually happened — per-role Brier vs baseline, reliability buckets, per-pair losses |
 | Developer | `SabrJev.Catalog` is the trusted boundary: exact keys, `id == role:player_id:year`, outer metrics == judgment-state metrics, PA/IP == sample value — mutations rejected before any Jev use |
 | Researcher | Prospective pair (`mix sabr.capture` / `mix sabr.evaluate`) freezes predictions before the outcome season under a Jan-1 cutoff; Brier by role, baselines, reliability buckets, pending-not-negative outcomes |
 
@@ -70,8 +70,8 @@ flowchart LR
 flowchart TD
     A[Validated answers] --> B{Answer type}
     B -->|Choice / Score| C{confidence}
-    C -->|≥ 0.65| ACT[act]
-    C -->|≥ 0.45| REV[review]
+    C -->|mean ≥ 0.65| ACT[act]
+    C -->|mean ≥ 0.45| REV[review]
     C -->|else, or 'other'| ESC[escalate]
     B -->|Noul: max p, 1-p| D{confidence}
     D -->|≥ 0.85| ACT

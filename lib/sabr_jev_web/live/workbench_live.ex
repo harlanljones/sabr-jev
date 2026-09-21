@@ -94,6 +94,8 @@ defmodule SabrJevWeb.WorkbenchLive do
           {" | "}
           <a href={~p"/storylines"}>Storylines</a>
           {" | "}
+          <a href={~p"/backtest"}>Backtest</a>
+          {" | "}
           <a href={~p"/about"}>About &amp; formulas</a>
         </nav>
       </header>
@@ -110,7 +112,13 @@ defmodule SabrJevWeb.WorkbenchLive do
       </section>
 
       <section :if={!@load_error && @catalog} aria-label="Card selection">
-        <form phx-change="filter" class="filters" data-filters="true" aria-label="Filter cards">
+        <form
+          phx-change="filter"
+          id="card-filters"
+          class="filters"
+          data-filters="true"
+          aria-label="Filter cards"
+        >
           <label>
             Position
             <select name="filter[position]" data-facet="position">
@@ -684,7 +692,7 @@ defmodule SabrJevWeb.WorkbenchLive do
   defp pct(nil), do: "unavailable"
   defp pct(value) when is_number(value), do: "#{Float.round(value * 100.0, 1)}%"
 
-  defp verdict_line(:act), do: "Confidence clears the bar on every question — act on this read."
+  defp verdict_line(:act), do: "Confidence clears the bar collectively — act on this read."
   defp verdict_line("act"), do: verdict_line(:act)
 
   defp verdict_line(:review),

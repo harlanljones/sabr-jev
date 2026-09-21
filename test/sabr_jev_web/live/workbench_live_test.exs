@@ -13,21 +13,22 @@ defmodule SabrJevWeb.WorkbenchLiveTest do
 
     assert has_element?(view, "[data-season-card='batter:judgeaa01:2024']", "Aaron Judge")
     assert has_element?(view, "[data-headline='ops_plus']")
-    assert has_element?(view, "[data-latch='review']")
+    assert has_element?(view, "[data-latch='act']")
     assert render(view) =~ "provisional thresholds"
-    assert has_element?(view, "[data-probabilities='full']", "breakout")
+    assert has_element?(view, "[data-probabilities='summary']", "breakout")
     assert has_element?(view, "[data-oracle='present']", "never sent to Jev")
   end
 
   test "review lane shows full probabilities with no bold single recommendation", %{conn: conn} do
-    view = open_card(conn, "batter:judgeaa01:2024")
+    view = open_card(conn, "batter:arozara01:2024")
 
     assert has_element?(view, "[data-probabilities='full']")
+    assert has_element?(view, "[data-latch='review']")
     refute has_element?(view, "section.judgment strong")
   end
 
   test "escalated card keeps full probabilities and the oracle pane", %{conn: conn} do
-    view = open_card(conn, "pitcher:skenepa01:2024")
+    view = open_card(conn, "pitcher:snellbl01:2023")
 
     assert has_element?(view, "[data-latch='escalate']")
     assert has_element?(view, "[data-probabilities='full']")
@@ -46,17 +47,20 @@ defmodule SabrJevWeb.WorkbenchLiveTest do
     view = open_card(conn, "batter:sotoju01:2025")
 
     assert has_element?(view, "[data-season-card='batter:sotoju01:2025']")
-    assert has_element?(view, "[data-latch='review']")
-    assert has_element?(view, "[data-probabilities='full']")
+    assert has_element?(view, "[data-latch='act']")
+    assert has_element?(view, "[data-probabilities='summary']")
     assert has_element?(view, "[data-oracle='missing']")
     refute has_element?(view, "[data-no-recording]")
   end
 
   test "verdict framing states the plain-language call", %{conn: conn} do
     view = open_card(conn, "batter:judgeaa01:2024")
+    assert has_element?(view, "[data-verdict='act']", "act on this read")
+
+    review_view = open_card(conn, "batter:arozara01:2024")
 
     assert has_element?(
-             view,
+             review_view,
              "[data-verdict='review']",
              "full probabilities below are the verdict"
            )
@@ -77,18 +81,19 @@ defmodule SabrJevWeb.WorkbenchLiveTest do
     |> element("form[data-filters]")
     |> render_change(%{filter: %{verdict: "review"}})
 
-    assert has_element?(view, "[data-card-id='batter:judgeaa01:2024']")
-    refute has_element?(view, "[data-card-id='batter:sotoju01:2024']")
-    assert has_element?(view, "[data-filter-note]", "Showing 10 of 37")
+    assert has_element?(view, "[data-card-id='batter:arozara01:2024']")
+    refute has_element?(view, "[data-card-id='batter:sotoju01:2025']")
+    assert has_element?(view, "[data-filter-note]", "Showing 7 of 50")
 
     view
     |> element("form[data-filters]")
     |> render_change(%{filter: %{position: "pitcher"}})
 
-    assert has_element?(view, "select[data-facet='verdict'] option[value='act'][disabled]")
+    assert has_element?(view, "[data-card-id='pitcher:colege01:2023']")
+    assert has_element?(view, "[data-filter-note]", "Showing 10 of 50")
   end
 
-  test "act verdicts exist and filter cleanly", %{conn: conn} do
+  test "act verdicts exist for both roles and filter cleanly", %{conn: conn} do
     {:ok, view, _html} = live(conn, "/")
 
     view
@@ -96,7 +101,14 @@ defmodule SabrJevWeb.WorkbenchLiveTest do
     |> render_change(%{filter: %{verdict: "act"}})
 
     assert has_element?(view, "[data-card-id='batter:guerrvl02:2021']")
-    assert has_element?(view, "[data-filter-note]", "Showing 4 of 37")
+    assert has_element?(view, "[data-filter-note]", "Showing 17 of 50")
+
+    view
+    |> element("form[data-filters]")
+    |> render_change(%{filter: %{position: "pitcher"}})
+
+    assert has_element?(view, "[data-card-id='pitcher:skubata01:2024']")
+    assert has_element?(view, "[data-filter-note]", "Showing 12 of 50")
   end
 
   test "season facet filters to that season only", %{conn: conn} do
@@ -112,7 +124,7 @@ defmodule SabrJevWeb.WorkbenchLiveTest do
 
     assert has_element?(view, "[data-card-id='pitcher:burneco01:2021']")
     refute has_element?(view, "[data-card-id='batter:judgeaa01:2024']")
-    assert has_element?(view, "[data-filter-note]", "Showing 4 of 37")
+    assert has_element?(view, "[data-filter-note]", "Showing 5 of 50")
   end
 
   test "position facet switches the picker", %{conn: conn} do

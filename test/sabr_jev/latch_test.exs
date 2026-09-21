@@ -111,22 +111,38 @@ defmodule SabrJev.LatchTest do
              )
   end
 
-  test "choice/score bars sit at act 0.65 and review 0.45" do
-    for {confidence, expected} <- [
-          {0.9, :act},
-          {0.65, :act},
-          {0.6, :review},
-          {0.45, :review},
-          {0.44, :escalate}
+  test "choice/score bars route on mean confidence: act 0.65, review 0.45" do
+    for {confidences, expected} <- [
+          {[0.9, 0.9, 0.9], :act},
+          {[0.65, 0.65, 0.65], :act},
+          {[0.99, 0.4, 0.99], :act},
+          {[0.6, 0.6, 0.6], :review},
+          {[0.45, 0.45, 0.45], :review},
+          {[0.44, 0.44, 0.44], :escalate},
+          {[0.1, 0.2, 0.3], :escalate}
         ] do
+      [c1, c2, c3] = confidences
+
       answers = %{
-        "season_read" => choice_answer("stable", season_options(), confidence),
-        "confidence_in_signal" => score_answer(confidence),
-        "profile" => choice_answer("balanced", batter_profile_options(), confidence)
+        "season_read" => choice_answer("stable", season_options(), c1),
+        "confidence_in_signal" => score_answer(c2),
+        "profile" => choice_answer("balanced", batter_profile_options(), c3)
       }
 
       assert {:ok, %{route: ^expected}} = Latch.route(answers, @batter_card)
     end
+  end
+
+  test "per-answer routes stay separate from the card route" do
+    answers = %{
+      "season_read" => choice_answer("stable", season_options(), 0.4),
+      "confidence_in_signal" => score_answer(0.97),
+      "profile" => choice_answer("balanced", batter_profile_options(), 0.99)
+    }
+
+    assert {:ok, decision} = Latch.route(answers, @batter_card)
+    assert decision.answer_routes["season_read"] == :escalate
+    assert decision.route == :act
   end
 
   test "validates full role sample contract and state consistency before routing" do
@@ -162,11 +178,11 @@ defmodule SabrJev.LatchTest do
     assert decision.reasons == [:underqualified_sample]
   end
 
-  test "all 35 immutable real recordings validate and route with their full cards" do
+  test "all 48 immutable real recordings validate and route with their full cards" do
     catalog = Jason.decode!(File.read!("priv/data/cards.json"))
     cards = Map.new(catalog["cards"], &{&1["id"], &1})
     paths = Path.wildcard("priv/jev/recordings/*.json")
-    assert length(paths) == 35
+    assert length(paths) == 48
 
     for path <- paths do
       record = Jason.decode!(File.read!(path))

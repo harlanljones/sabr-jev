@@ -3,13 +3,13 @@ defmodule SabrJev.CatalogTest do
 
   alias SabrJev.Catalog
 
-  test "loads the frozen catalog with 37 trusted cards" do
+  test "loads the frozen catalog with 50 trusted cards" do
     assert {:ok, catalog} = Catalog.load()
     assert catalog["schema_version"] == 1
-    assert length(catalog["cards"]) == 37
+    assert length(catalog["cards"]) == 50
     assert Catalog.roles(catalog) == ["batter", "pitcher"]
-    assert length(Catalog.for_role(catalog, "batter")) == 19
-    assert length(Catalog.for_role(catalog, "pitcher")) == 18
+    assert length(Catalog.for_role(catalog, "batter")) == 25
+    assert length(Catalog.for_role(catalog, "pitcher")) == 25
 
     for card <- catalog["cards"] do
       assert :ok = Catalog.validate_card(card)
@@ -76,7 +76,7 @@ defmodule SabrJev.CatalogTest do
     assert record["card_id"] == card["id"]
 
     assert {:ok, %{record: _, decision: decision}} = Catalog.judgment(card)
-    assert decision.route == :review
+    assert decision.route == :act
 
     {:ok, unrecorded} = Catalog.get(catalog, "batter:troutmi01:2024")
     assert {:error, :no_recording} = Catalog.load_recording(unrecorded)

@@ -59,6 +59,64 @@
       "year": 2023
     },
     {
+      "id": "batter:altuvjo01:2022",
+      "judgment_state": {
+        "metrics": {
+          "babip": 0.31476997578692495,
+          "bb_pct": 0.10927152317880795,
+          "iso": 0.2333965844402277,
+          "k_pct": 0.14403973509933773,
+          "league_obp": 0.3093511682062488,
+          "league_slg": 0.39180600371565466,
+          "obp": 0.38741721854304634,
+          "ops": 0.9206240496625909,
+          "ops_plus": 160.0247907199602,
+          "pa": 604,
+          "park_adjustment": 1.005,
+          "slg": 0.5332068311195446,
+          "woba": 0.3969019933554817
+        },
+        "role": "batter",
+        "sample": {
+          "minimum": 200,
+          "value": 604
+        }
+      },
+      "metrics": {
+        "babip": 0.31476997578692495,
+        "bb_pct": 0.10927152317880795,
+        "iso": 0.2333965844402277,
+        "k_pct": 0.14403973509933773,
+        "league_obp": 0.3093511682062488,
+        "league_slg": 0.39180600371565466,
+        "obp": 0.38741721854304634,
+        "ops": 0.9206240496625909,
+        "ops_plus": 160.0247907199602,
+        "pa": 604,
+        "park_adjustment": 1.005,
+        "slg": 0.5332068311195446,
+        "woba": 0.3969019933554817
+      },
+      "oracle": {
+        "label": false,
+        "metric": "ops_plus",
+        "target": "ops_plus_drop_ge_10_next",
+        "value": 150.6834378887538,
+        "year": 2023
+      },
+      "player_id": "altuvjo01",
+      "player_name": "Jose Altuve",
+      "role": "batter",
+      "sample": {
+        "minimum": 200,
+        "qualified": true,
+        "unit": "PA",
+        "value": 604
+      },
+      "warnings": [],
+      "year": 2022
+    },
+    {
       "id": "batter:alvaryo01:2022",
       "judgment_state": {
         "metrics": {
@@ -286,6 +344,122 @@
         "qualified": true,
         "unit": "PA",
         "value": 693
+      },
+      "warnings": [],
+      "year": 2023
+    },
+    {
+      "id": "batter:bogaexa01:2022",
+      "judgment_state": {
+        "metrics": {
+          "babip": 0.3619489559164733,
+          "bb_pct": 0.09033280507131537,
+          "iso": 0.1490125673249551,
+          "k_pct": 0.18700475435816163,
+          "league_obp": 0.3093511682062488,
+          "league_slg": 0.39180600371565466,
+          "obp": 0.37717908082408874,
+          "ops": 0.8331934434811803,
+          "ops_plus": 129.14774644569343,
+          "pa": 631,
+          "park_adjustment": 1.04,
+          "slg": 0.45601436265709155,
+          "woba": 0.3631240063593005
+        },
+        "role": "batter",
+        "sample": {
+          "minimum": 200,
+          "value": 631
+        }
+      },
+      "metrics": {
+        "babip": 0.3619489559164733,
+        "bb_pct": 0.09033280507131537,
+        "iso": 0.1490125673249551,
+        "k_pct": 0.18700475435816163,
+        "league_obp": 0.3093511682062488,
+        "league_slg": 0.39180600371565466,
+        "obp": 0.37717908082408874,
+        "ops": 0.8331934434811803,
+        "ops_plus": 129.14774644569343,
+        "pa": 631,
+        "park_adjustment": 1.04,
+        "slg": 0.45601436265709155,
+        "woba": 0.3631240063593005
+      },
+      "oracle": {
+        "label": false,
+        "metric": "ops_plus",
+        "target": "ops_plus_drop_ge_10_next",
+        "value": 120.54950711937069,
+        "year": 2023
+      },
+      "player_id": "bogaexa01",
+      "player_name": "Xander Bogaerts",
+      "role": "batter",
+      "sample": {
+        "minimum": 200,
+        "qualified": true,
+        "unit": "PA",
+        "value": 631
+      },
+      "warnings": [],
+      "year": 2022
+    },
+    {
+      "id": "batter:carroco02:2023",
+      "judgment_state": {
+        "metrics": {
+          "babip": 0.324582338902148,
+          "bb_pct": 0.08837209302325581,
+          "iso": 0.22123893805309736,
+          "k_pct": 0.1937984496124031,
+          "league_obp": 0.3232638586720042,
+          "league_slg": 0.41649816064511413,
+          "obp": 0.3615023474178404,
+          "ops": 0.8676970376833271,
+          "ops_plus": 134.5374421369146,
+          "pa": 645,
+          "park_adjustment": 0.995,
+          "slg": 0.5061946902654867,
+          "woba": 0.37036363636363634
+        },
+        "role": "batter",
+        "sample": {
+          "minimum": 200,
+          "value": 645
+        }
+      },
+      "metrics": {
+        "babip": 0.324582338902148,
+        "bb_pct": 0.08837209302325581,
+        "iso": 0.22123893805309736,
+        "k_pct": 0.1937984496124031,
+        "league_obp": 0.3232638586720042,
+        "league_slg": 0.41649816064511413,
+        "obp": 0.3615023474178404,
+        "ops": 0.8676970376833271,
+        "ops_plus": 134.5374421369146,
+        "pa": 645,
+        "park_adjustment": 0.995,
+        "slg": 0.5061946902654867,
+        "woba": 0.37036363636363634
+      },
+      "oracle": {
+        "label": true,
+        "metric": "ops_plus",
+        "target": "ops_plus_drop_ge_10_next",
+        "value": 106.8729626394219,
+        "year": 2024
+      },
+      "player_id": "carroco02",
+      "player_name": "Corbin Carroll",
+      "role": "batter",
+      "sample": {
+        "minimum": 200,
+        "qualified": true,
+        "unit": "PA",
+        "value": 645
       },
       "warnings": [],
       "year": 2023
@@ -807,6 +981,64 @@
       "year": 2022
     },
     {
+      "id": "batter:rodriju01:2023",
+      "judgment_state": {
+        "metrics": {
+          "babip": 0.32962138084632514,
+          "bb_pct": 0.06582633053221289,
+          "iso": 0.20948012232415902,
+          "k_pct": 0.24509803921568626,
+          "league_obp": 0.31699599567926157,
+          "league_slg": 0.41182401243865707,
+          "obp": 0.3333333333333333,
+          "ops": 0.8180428134556574,
+          "ops_plus": 128.5661607580714,
+          "pa": 714,
+          "park_adjustment": 0.975,
+          "slg": 0.4847094801223242,
+          "woba": 0.3475466101694915
+        },
+        "role": "batter",
+        "sample": {
+          "minimum": 200,
+          "value": 714
+        }
+      },
+      "metrics": {
+        "babip": 0.32962138084632514,
+        "bb_pct": 0.06582633053221289,
+        "iso": 0.20948012232415902,
+        "k_pct": 0.24509803921568626,
+        "league_obp": 0.31699599567926157,
+        "league_slg": 0.41182401243865707,
+        "obp": 0.3333333333333333,
+        "ops": 0.8180428134556574,
+        "ops_plus": 128.5661607580714,
+        "pa": 714,
+        "park_adjustment": 0.975,
+        "slg": 0.4847094801223242,
+        "woba": 0.3475466101694915
+      },
+      "oracle": {
+        "label": true,
+        "metric": "ops_plus",
+        "target": "ops_plus_drop_ge_10_next",
+        "value": 117.52773840256259,
+        "year": 2024
+      },
+      "player_id": "rodriju01",
+      "player_name": "Julio Rodriguez",
+      "role": "batter",
+      "sample": {
+        "minimum": 200,
+        "qualified": true,
+        "unit": "PA",
+        "value": 714
+      },
+      "warnings": [],
+      "year": 2023
+    },
+    {
       "id": "batter:schwaky01:2022",
       "judgment_state": {
         "metrics": {
@@ -863,6 +1095,64 @@
       },
       "warnings": [],
       "year": 2022
+    },
+    {
+      "id": "batter:semiema01:2021",
+      "judgment_state": {
+        "metrics": {
+          "babip": 0.27586206896551724,
+          "bb_pct": 0.09116022099447514,
+          "iso": 0.27300613496932513,
+          "k_pct": 0.20165745856353592,
+          "league_obp": 0.3159370377729209,
+          "league_slg": 0.41468212498616863,
+          "obp": 0.3342541436464088,
+          "ops": 0.8725977019286174,
+          "ops_plus": 133.2856287557128,
+          "pa": 724,
+          "park_adjustment": 1.01,
+          "slg": 0.5383435582822086,
+          "woba": 0.36767955801104973
+        },
+        "role": "batter",
+        "sample": {
+          "minimum": 200,
+          "value": 724
+        }
+      },
+      "metrics": {
+        "babip": 0.27586206896551724,
+        "bb_pct": 0.09116022099447514,
+        "iso": 0.27300613496932513,
+        "k_pct": 0.20165745856353592,
+        "league_obp": 0.3159370377729209,
+        "league_slg": 0.41468212498616863,
+        "obp": 0.3342541436464088,
+        "ops": 0.8725977019286174,
+        "ops_plus": 133.2856287557128,
+        "pa": 724,
+        "park_adjustment": 1.01,
+        "slg": 0.5383435582822086,
+        "woba": 0.36767955801104973
+      },
+      "oracle": {
+        "label": true,
+        "metric": "ops_plus",
+        "target": "ops_plus_drop_ge_10_next",
+        "value": 107.77740158451596,
+        "year": 2022
+      },
+      "player_id": "semiema01",
+      "player_name": "Marcus Semien",
+      "role": "batter",
+      "sample": {
+        "minimum": 200,
+        "qualified": true,
+        "unit": "PA",
+        "value": 724
+      },
+      "warnings": [],
+      "year": 2021
     },
     {
       "id": "batter:sotoju01:2024",
@@ -1027,6 +1317,64 @@
         "Below minimum sample or sample unavailable"
       ],
       "year": 2024
+    },
+    {
+      "id": "batter:turnetr01:2023",
+      "judgment_state": {
+        "metrics": {
+          "babip": 0.3103448275862069,
+          "bb_pct": 0.06512301013024602,
+          "iso": 0.19248826291079812,
+          "k_pct": 0.2170767004341534,
+          "league_obp": 0.3232638586720042,
+          "league_slg": 0.41649816064511413,
+          "obp": 0.31982633863965265,
+          "ops": 0.7783552901263506,
+          "ops_plus": 111.1394867927844,
+          "pa": 691,
+          "park_adjustment": 0.99,
+          "slg": 0.458528951486698,
+          "woba": 0.333243831640058
+        },
+        "role": "batter",
+        "sample": {
+          "minimum": 200,
+          "value": 691
+        }
+      },
+      "metrics": {
+        "babip": 0.3103448275862069,
+        "bb_pct": 0.06512301013024602,
+        "iso": 0.19248826291079812,
+        "k_pct": 0.2170767004341534,
+        "league_obp": 0.3232638586720042,
+        "league_slg": 0.41649816064511413,
+        "obp": 0.31982633863965265,
+        "ops": 0.7783552901263506,
+        "ops_plus": 111.1394867927844,
+        "pa": 691,
+        "park_adjustment": 0.99,
+        "slg": 0.458528951486698,
+        "woba": 0.333243831640058
+      },
+      "oracle": {
+        "label": false,
+        "metric": "ops_plus",
+        "target": "ops_plus_drop_ge_10_next",
+        "value": 121.06033168229872,
+        "year": 2024
+      },
+      "player_id": "turnetr01",
+      "player_name": "Trea Turner",
+      "role": "batter",
+      "sample": {
+        "minimum": 200,
+        "qualified": true,
+        "unit": "PA",
+        "value": 691
+      },
+      "warnings": [],
+      "year": 2023
     },
     {
       "id": "batter:wittbo02:2024",
@@ -1279,6 +1627,54 @@
       "year": 2023
     },
     {
+      "id": "pitcher:degroja01:2020",
+      "judgment_state": {
+        "metrics": {
+          "bb_per_9": 2.3823529411764706,
+          "era": 2.3823529411764706,
+          "fip": 2.2908434398555677,
+          "hr_per_9": 0.9264705882352942,
+          "ip": 68.0,
+          "k_bb_pct": 0.3208955223880597,
+          "k_per_9": 13.764705882352942,
+          "league_cfip": 3.2173140280908616
+        },
+        "role": "pitcher",
+        "sample": {
+          "minimum": 50,
+          "value": 68.0
+        }
+      },
+      "metrics": {
+        "bb_per_9": 2.3823529411764706,
+        "era": 2.3823529411764706,
+        "fip": 2.2908434398555677,
+        "hr_per_9": 0.9264705882352942,
+        "ip": 68.0,
+        "k_bb_pct": 0.3208955223880597,
+        "k_per_9": 13.764705882352942,
+        "league_cfip": 3.2173140280908616
+      },
+      "oracle": {
+        "label": false,
+        "metric": "fip",
+        "target": "fip_rise_ge_0_50_next",
+        "value": 1.1930760680446337,
+        "year": 2021
+      },
+      "player_id": "degroja01",
+      "player_name": "Jacob deGrom",
+      "role": "pitcher",
+      "sample": {
+        "minimum": 50,
+        "qualified": true,
+        "unit": "IP",
+        "value": 68.0
+      },
+      "warnings": [],
+      "year": 2020
+    },
+    {
       "id": "pitcher:degroja01:2021",
       "judgment_state": {
         "metrics": {
@@ -1369,6 +1765,150 @@
         "Below minimum sample or sample unavailable"
       ],
       "year": 2024
+    },
+    {
+      "id": "pitcher:galleza01:2023",
+      "judgment_state": {
+        "metrics": {
+          "bb_per_9": 2.0142857142857142,
+          "era": 3.4714285714285715,
+          "fip": 3.269128018484122,
+          "hr_per_9": 0.9428571428571428,
+          "ip": 210.0,
+          "k_bb_pct": 0.2044917257683215,
+          "k_per_9": 9.428571428571429,
+          "league_cfip": 3.2596042089603126
+        },
+        "role": "pitcher",
+        "sample": {
+          "minimum": 50,
+          "value": 210.0
+        }
+      },
+      "metrics": {
+        "bb_per_9": 2.0142857142857142,
+        "era": 3.4714285714285715,
+        "fip": 3.269128018484122,
+        "hr_per_9": 0.9428571428571428,
+        "ip": 210.0,
+        "k_bb_pct": 0.2044917257683215,
+        "k_per_9": 9.428571428571429,
+        "league_cfip": 3.2596042089603126
+      },
+      "oracle": {
+        "label": false,
+        "metric": "fip",
+        "target": "fip_rise_ge_0_50_next",
+        "value": 3.4499896454571113,
+        "year": 2024
+      },
+      "player_id": "galleza01",
+      "player_name": "Zac Gallen",
+      "role": "pitcher",
+      "sample": {
+        "minimum": 50,
+        "qualified": true,
+        "unit": "IP",
+        "value": 210.0
+      },
+      "warnings": [],
+      "year": 2023
+    },
+    {
+      "id": "pitcher:imanash01:2024",
+      "judgment_state": {
+        "metrics": {
+          "bb_per_9": 1.4538461538461538,
+          "era": 2.9076923076923076,
+          "fip": 3.7943763398438057,
+          "hr_per_9": 1.4019230769230768,
+          "ip": 173.33333333333334,
+          "k_bb_pct": 0.21037463976945245,
+          "k_per_9": 9.034615384615385,
+          "league_cfip": 3.240530185997652
+        },
+        "role": "pitcher",
+        "sample": {
+          "minimum": 50,
+          "value": 173.33333333333334
+        }
+      },
+      "metrics": {
+        "bb_per_9": 1.4538461538461538,
+        "era": 2.9076923076923076,
+        "fip": 3.7943763398438057,
+        "hr_per_9": 1.4019230769230768,
+        "ip": 173.33333333333334,
+        "k_bb_pct": 0.21037463976945245,
+        "k_per_9": 9.034615384615385,
+        "league_cfip": 3.240530185997652
+      },
+      "oracle": {
+        "label": true,
+        "metric": "fip",
+        "target": "fip_rise_ge_0_50_next",
+        "value": 4.9474436431495,
+        "year": 2025
+      },
+      "player_id": "imanash01",
+      "player_name": "Shota Imanaga",
+      "role": "pitcher",
+      "sample": {
+        "minimum": 50,
+        "qualified": true,
+        "unit": "IP",
+        "value": 173.33333333333334
+      },
+      "warnings": [],
+      "year": 2024
+    },
+    {
+      "id": "pitcher:kershcl01:2022",
+      "judgment_state": {
+        "metrics": {
+          "bb_per_9": 1.6385224274406331,
+          "era": 2.2796833773087073,
+          "fip": 2.627551651477961,
+          "hr_per_9": 0.712401055408971,
+          "ip": 126.33333333333333,
+          "k_bb_pct": 0.23123732251521298,
+          "k_per_9": 9.759894459102902,
+          "league_cfip": 3.1737257939581722
+        },
+        "role": "pitcher",
+        "sample": {
+          "minimum": 50,
+          "value": 126.33333333333333
+        }
+      },
+      "metrics": {
+        "bb_per_9": 1.6385224274406331,
+        "era": 2.2796833773087073,
+        "fip": 2.627551651477961,
+        "hr_per_9": 0.712401055408971,
+        "ip": 126.33333333333333,
+        "k_bb_pct": 0.23123732251521298,
+        "k_per_9": 9.759894459102902,
+        "league_cfip": 3.1737257939581722
+      },
+      "oracle": {
+        "label": true,
+        "metric": "fip",
+        "target": "fip_rise_ge_0_50_next",
+        "value": 4.03428775326411,
+        "year": 2023
+      },
+      "player_id": "kershcl01",
+      "player_name": "Clayton Kershaw",
+      "role": "pitcher",
+      "sample": {
+        "minimum": 50,
+        "qualified": true,
+        "unit": "IP",
+        "value": 126.33333333333333
+      },
+      "warnings": [],
+      "year": 2022
     },
     {
       "id": "pitcher:ohtansh01:2022",
@@ -1749,6 +2289,54 @@
       "year": 2024
     },
     {
+      "id": "pitcher:steelju01:2023",
+      "judgment_state": {
+        "metrics": {
+          "bb_per_9": 1.8692307692307693,
+          "era": 3.0634615384615387,
+          "fip": 3.0230657474218505,
+          "hr_per_9": 0.7269230769230769,
+          "ip": 173.33333333333334,
+          "k_bb_pct": 0.19553072625698323,
+          "k_per_9": 9.138461538461538,
+          "league_cfip": 3.259604208960312
+        },
+        "role": "pitcher",
+        "sample": {
+          "minimum": 50,
+          "value": 173.33333333333334
+        }
+      },
+      "metrics": {
+        "bb_per_9": 1.8692307692307693,
+        "era": 3.0634615384615387,
+        "fip": 3.0230657474218505,
+        "hr_per_9": 0.7269230769230769,
+        "ip": 173.33333333333334,
+        "k_bb_pct": 0.19553072625698323,
+        "k_per_9": 9.138461538461538,
+        "league_cfip": 3.259604208960312
+      },
+      "oracle": {
+        "label": false,
+        "metric": "fip",
+        "target": "fip_rise_ge_0_50_next",
+        "value": 3.3073618691659687,
+        "year": 2024
+      },
+      "player_id": "steelju01",
+      "player_name": "Justin Steele",
+      "role": "pitcher",
+      "sample": {
+        "minimum": 50,
+        "qualified": true,
+        "unit": "IP",
+        "value": 173.33333333333334
+      },
+      "warnings": [],
+      "year": 2023
+    },
+    {
       "id": "pitcher:stridsp01:2023",
       "judgment_state": {
         "metrics": {
@@ -1789,6 +2377,54 @@
       },
       "warnings": [],
       "year": 2023
+    },
+    {
+      "id": "pitcher:valdefr01:2022",
+      "judgment_state": {
+        "metrics": {
+          "bb_per_9": 2.9950331125827816,
+          "era": 2.816225165562914,
+          "fip": 2.9966197273091058,
+          "hr_per_9": 0.4917218543046358,
+          "ip": 201.33333333333334,
+          "k_bb_pct": 0.15356711003627568,
+          "k_per_9": 8.672185430463577,
+          "league_cfip": 3.0512554888985095
+        },
+        "role": "pitcher",
+        "sample": {
+          "minimum": 50,
+          "value": 201.33333333333334
+        }
+      },
+      "metrics": {
+        "bb_per_9": 2.9950331125827816,
+        "era": 2.816225165562914,
+        "fip": 2.9966197273091058,
+        "hr_per_9": 0.4917218543046358,
+        "ip": 201.33333333333334,
+        "k_bb_pct": 0.15356711003627568,
+        "k_per_9": 8.672185430463577,
+        "league_cfip": 3.0512554888985095
+      },
+      "oracle": {
+        "label": false,
+        "metric": "fip",
+        "target": "fip_rise_ge_0_50_next",
+        "value": 3.492914718688281,
+        "year": 2023
+      },
+      "player_id": "valdefr01",
+      "player_name": "Framber Valdez",
+      "role": "pitcher",
+      "sample": {
+        "minimum": 50,
+        "qualified": true,
+        "unit": "IP",
+        "value": 201.33333333333334
+      },
+      "warnings": [],
+      "year": 2022
     },
     {
       "id": "pitcher:verlaju01:2022",
@@ -1837,6 +2473,54 @@
       },
       "warnings": [],
       "year": 2022
+    },
+    {
+      "id": "pitcher:webblo01:2023",
+      "judgment_state": {
+        "metrics": {
+          "bb_per_9": 1.2916666666666667,
+          "era": 3.25,
+          "fip": 3.1670116163677196,
+          "hr_per_9": 0.8333333333333334,
+          "ip": 216.0,
+          "k_bb_pct": 0.19176470588235295,
+          "k_per_9": 8.083333333333334,
+          "league_cfip": 3.259604208960312
+        },
+        "role": "pitcher",
+        "sample": {
+          "minimum": 50,
+          "value": 216.0
+        }
+      },
+      "metrics": {
+        "bb_per_9": 1.2916666666666667,
+        "era": 3.25,
+        "fip": 3.1670116163677196,
+        "hr_per_9": 0.8333333333333334,
+        "ip": 216.0,
+        "k_bb_pct": 0.19176470588235295,
+        "k_per_9": 8.083333333333334,
+        "league_cfip": 3.259604208960312
+      },
+      "oracle": {
+        "label": false,
+        "metric": "fip",
+        "target": "fip_rise_ge_0_50_next",
+        "value": 3.0206604791572613,
+        "year": 2024
+      },
+      "player_id": "webblo01",
+      "player_name": "Logan Webb",
+      "role": "pitcher",
+      "sample": {
+        "minimum": 50,
+        "qualified": true,
+        "unit": "IP",
+        "value": 216.0
+      },
+      "warnings": [],
+      "year": 2023
     },
     {
       "id": "pitcher:wheelza01:2024",
