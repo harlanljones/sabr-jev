@@ -32,11 +32,20 @@ defmodule SabrJev.Catalog do
   @units %{"batter" => "PA", "pitcher" => "IP"}
   @count_keys %{"batter" => "pa", "pitcher" => "ip"}
 
+  # Resolved through the OTP application so the same code serves Mix
+  # (cwd = repo root) and releases (priv lives under the release lib dir).
   @spec default_path() :: Path.t()
-  def default_path, do: "priv/data/cards.json"
+  def default_path, do: Path.join(priv_dir(), "data/cards.json")
 
   @spec recordings_dir() :: Path.t()
-  def recordings_dir, do: "priv/jev/recordings"
+  def recordings_dir, do: Path.join(priv_dir(), "jev/recordings")
+
+  defp priv_dir do
+    case :code.priv_dir(:sabr_jev) do
+      {:error, _} -> "priv"
+      dir -> to_string(dir)
+    end
+  end
 
   @spec recording_path(String.t()) :: Path.t()
   def recording_path(card_id) when is_binary(card_id) do

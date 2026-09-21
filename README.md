@@ -99,6 +99,20 @@ mix sabr.record --card batter:judgeaa01:2024   # live Jev (needs key)
 - **OPS+ (Sabr-Jev)** label everywhere; no vendor-parity claim.
 - No deterministic Noul; minimums (200 PA / 50 IP) live in code.
 - No T+1 leakage: oracle joins are eval-only, never judgment state.
+- Footer cites Lahman and says “no Fangraphs scrape in v1”. No Retrosheet
+  data in v1. Count Gate stays parked; not Skipper.
+
+## Demo deployment (Fly.io)
+
+```sh
+fly secrets set SECRET_KEY_BASE=$(mix phx.gen.secret)   # once; only secret needed
+fly deploy                                              # builds Dockerfile, serves :4000
+```
+
+The image bakes in the frozen cards + recordings, so the instance needs no
+API key and performs no live inference. Prospective ledger writes land in
+`tmp/` and are ephemeral across restarts — mount a volume at `/data` if
+capture demos must persist.
 - Footer cites Lahman, “no Fangraphs scrape in v1”. No Retrosheet data in v1. Count Gate parked; not Skipper.
 
 ## License
