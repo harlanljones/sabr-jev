@@ -5,9 +5,19 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![No live scrape](https://img.shields.io/badge/scrape-none-lightgrey)](#non-negotiables)
 
-Batter|Pitcher season cards from free public stats, gated by typed TypeSafe Jev
-judgments through a **confidence latch**. The latch is the product — without
-it this is a stat table.
+Batter|Pitcher season cards from free public stats, graded by typed TypeSafe Jev
+judgments behind a **confidence latch**. Season stats lie by omission — a hot
+OPS hides a lucky BABIP, a shiny ERA hides a bad FIP. Sabr-Jev's value is the
+verdict on the numbers: **act** on the read, **review** the full
+probabilities, or **escalate** when the signal isn't there. Small samples can
+never act, borderline calls never get a bold claim, and every judgment shows
+its work. Without the latch this is a stat table; with it, it's a second
+opinion you can audit.
+
+Use it to sanity-check a breakout season before buying in, to flag regression
+risk while there is still time to act on it, or as a reusable pattern for
+putting any AI judgment behind fail-closed types, frozen state hashes, and a
+prospective evaluation protocol instead of vibes.
 
 ## Results
 
