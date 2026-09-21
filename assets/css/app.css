@@ -43,6 +43,40 @@ nav { font-family: system-ui, sans-serif; font-size: 0.875rem; margin-top: 1rem;
 [role="group"][aria-label="Lens"] button + button { border-left: none; }
 [role="group"][aria-label="Lens"] { margin-top: 1.5rem; }
 .lens-note { font-size: 0.9rem; font-style: italic; }
+
+/* Storyline index: ruled ledger rows, verdict chip at the rail. */
+.storyline {
+  display: grid;
+  grid-template-columns: 7rem 1fr auto;
+  gap: 1rem 1.5rem;
+  align-items: baseline;
+  border-top: 2px solid currentColor;
+  padding: 1.25rem 0;
+  text-decoration: none;
+  color: inherit;
+}
+#storyline-list .storyline:last-child { border-bottom: 2px solid currentColor; }
+.storyline:hover .who { text-decoration: underline; text-underline-offset: 0.2em; }
+.season-tag { font-family: system-ui, sans-serif; font-size: 0.8rem; }
+.who { font-size: 1.4rem; }
+.hook { margin: 0.25rem 0 0; line-height: 1.55; max-width: 60ch; }
+.nums { font-variant-numeric: tabular-nums; font-size: 0.9rem; margin-top: 0.4rem; }
+.verdict {
+  font-family: system-ui, sans-serif;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border: 1px solid currentColor;
+  padding: 0.3rem 0.7rem;
+  white-space: nowrap;
+}
+.verdict.review { background: #efe6c8; }
+.verdict.escalate { background: #e8cfc8; }
+.verdict.act { background: #dde5d3; }
+@media (max-width: 40rem) {
+  .storyline { grid-template-columns: 1fr auto; }
+  .season-tag { grid-column: 1 / -1; }
+}
 .role-active { background: #202a27; color: #f5f2e9; }
 ul.card-picker { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
 ul.card-picker button {

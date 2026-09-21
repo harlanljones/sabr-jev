@@ -166,7 +166,7 @@ defmodule SabrJev.JudgmentsTest do
     catalog = Jason.decode!(File.read!("priv/data/cards.json"))
     cards = Map.new(catalog["cards"], &{&1["id"], &1})
     paths = Path.wildcard("priv/jev/recordings/*.json")
-    assert length(paths) == 10
+    assert length(paths) == 30
 
     for path <- paths do
       record = Jason.decode!(File.read!(path))

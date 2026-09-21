@@ -35,6 +35,17 @@ defmodule SabrJevWeb.WorkbenchLive do
   end
 
   @impl true
+  def handle_params(%{"card" => id}, _uri, socket) do
+    {:noreply,
+     case socket.assigns.catalog && Catalog.get(socket.assigns.catalog, id) do
+       {:ok, card} -> socket |> assign(:role, card["role"]) |> assign_card(id)
+       _ -> socket
+     end}
+  end
+
+  def handle_params(_params, _uri, socket), do: {:noreply, socket}
+
+  @impl true
   def handle_event("select-role", %{"role" => role}, socket) when role in ["batter", "pitcher"] do
     {:noreply,
      socket
@@ -82,6 +93,8 @@ defmodule SabrJevWeb.WorkbenchLive do
         </p>
         <nav aria-label="Workbench">
           <a href={~p"/"} aria-current="page">Workbench</a>
+          {" | "}
+          <a href={~p"/storylines"}>Storylines</a>
           {" | "}
           <a href={~p"/about"}>About &amp; formulas</a>
         </nav>

@@ -1,0 +1,237 @@
+{
+  "answers": {
+    "confidence_in_signal": {
+      "confidence": 0.62,
+      "description": "The metrics provide a strong and coherent signal.",
+      "label": "strong",
+      "legend": {
+        "0": {
+          "description": "The metrics provide weak or conflicting interpretive evidence.",
+          "label": "weak"
+        },
+        "1": {
+          "description": "The metrics provide a meaningful but not decisive signal.",
+          "label": "moderate"
+        },
+        "2": {
+          "description": "The metrics provide a strong and coherent signal.",
+          "label": "strong"
+        }
+      },
+      "level": 2,
+      "levels": [
+        {
+          "label": "weak",
+          "probability": 0.09
+        },
+        {
+          "label": "moderate",
+          "probability": 0.06
+        },
+        {
+          "label": "strong",
+          "probability": 0.85
+        }
+      ],
+      "probabilities": {
+        "0": 0.09,
+        "1": 0.06,
+        "2": 0.85
+      },
+      "score": 1.75,
+      "type": "score"
+    },
+    "fip_rise_ge_0_50_next": {
+      "confidence": 0.76,
+      "noul": 0.24,
+      "type": "noul"
+    },
+    "profile": {
+      "choice": "strikeout",
+      "confidence": 0.93,
+      "description": "Strikeout ability is the clearest feature.",
+      "options": [
+        {
+          "option": "strikeout",
+          "probability": 0.95
+        },
+        {
+          "option": "command",
+          "probability": 0.01
+        },
+        {
+          "option": "contact_management",
+          "probability": 0.02
+        },
+        {
+          "option": "balanced",
+          "probability": 0.02
+        },
+        {
+          "option": "other",
+          "probability": 0.0
+        }
+      ],
+      "probabilities": {
+        "balanced": 0.02,
+        "command": 0.01,
+        "contact_management": 0.02,
+        "other": 0.0,
+        "strikeout": 0.95
+      },
+      "type": "choice"
+    },
+    "season_read": {
+      "choice": "breakout",
+      "confidence": 0.48,
+      "description": "The supplied metrics jointly support an unusually strong positive season read.",
+      "options": [
+        {
+          "option": "breakout",
+          "probability": 0.58
+        },
+        {
+          "option": "stable",
+          "probability": 0.05
+        },
+        {
+          "option": "regression_risk",
+          "probability": 0.18
+        },
+        {
+          "option": "small_sample",
+          "probability": 0.18
+        },
+        {
+          "option": "other",
+          "probability": 0.01
+        }
+      ],
+      "probabilities": {
+        "breakout": 0.58,
+        "other": 0.01,
+        "regression_risk": 0.18,
+        "small_sample": 0.18,
+        "stable": 0.05
+      },
+      "type": "choice"
+    }
+  },
+  "card_id": "pitcher:degroja01:2021",
+  "model": "jev-1.13.0",
+  "questions_hash": "sha256:6635e0fc7d7a314fe1ee266ca6b7bc25106117960acd8d26b54f7d6dcbb63667",
+  "recorded_at": "2026-09-21T18:57:35Z",
+  "response": {
+    "answers": {
+      "confidence_in_signal": {
+        "confidence": 0.62,
+        "legend": {
+          "0": {
+            "description": "The metrics provide weak or conflicting interpretive evidence.",
+            "label": "weak"
+          },
+          "1": {
+            "description": "The metrics provide a meaningful but not decisive signal.",
+            "label": "moderate"
+          },
+          "2": {
+            "description": "The metrics provide a strong and coherent signal.",
+            "label": "strong"
+          }
+        },
+        "probabilities": {
+          "0": 0.09,
+          "1": 0.06,
+          "2": 0.85
+        },
+        "score": 1.75,
+        "type": "score"
+      },
+      "fip_rise_ge_0_50_next": {
+        "noul": 0.24,
+        "type": "noul"
+      },
+      "profile": {
+        "choice": "strikeout",
+        "confidence": 0.93,
+        "probabilities": {
+          "balanced": 0.02,
+          "command": 0.01,
+          "contact_management": 0.02,
+          "other": 0.0,
+          "strikeout": 0.95
+        },
+        "type": "choice"
+      },
+      "season_read": {
+        "choice": "breakout",
+        "confidence": 0.48,
+        "probabilities": {
+          "breakout": 0.58,
+          "other": 0.01,
+          "regression_risk": 0.18,
+          "small_sample": 0.18,
+          "stable": 0.05
+        },
+        "type": "choice"
+      }
+    },
+    "model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 985,
+      "output_tokens": 158
+    }
+  },
+  "schema_version": 1,
+  "source_lineage": {
+    "card_artifact": "priv/data/cards.json",
+    "card_artifact_schema_version": 1,
+    "provenance": {
+      "formula_version": "sabr-jev-v1",
+      "latest_season": 2025,
+      "license": "Lahman database: CC-BY-SA-3.0 Unported; SABR, donated by Sean Lahman",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "manifest_sha256": "eb3b3b9d52bd3af97d97bc29853607dc5d720bd2176b43419bbf1d8a1568908b",
+      "notice_url": "https://sabr.box.com/shared/static/qtgh1olzcaauz5x234wqx8huixizff8l.txt",
+      "oracle_policy": "Retrospective only; both seasons must meet PA>=200 or IP>=50",
+      "purpose": "Selected demonstration; not an evaluation holdout",
+      "scope": "AL/NL",
+      "sources": {
+        "Batting": {
+          "revision": "1dcc2bf5f955cc1224a3e1307256e1fe86b68dae",
+          "rows": 128598,
+          "sha256": "a4083e2d4bacf411c352686fd7c0696eaa4bc8719b718db5e9c45ac90fd95b35",
+          "url": "https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/1dcc2bf5f955cc1224a3e1307256e1fe86b68dae/csv/Lahman/Batting.csv"
+        },
+        "People": {
+          "revision": "1dcc2bf5f955cc1224a3e1307256e1fe86b68dae",
+          "rows": 24270,
+          "sha256": "33aacfdea45b8e19166e4d725191ac6b874b334260584d2999107b42cc746a81",
+          "url": "https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/1dcc2bf5f955cc1224a3e1307256e1fe86b68dae/csv/Lahman/People.csv"
+        },
+        "Pitching": {
+          "revision": "1dcc2bf5f955cc1224a3e1307256e1fe86b68dae",
+          "rows": 57630,
+          "sha256": "6c45460dabbe2384b6ede22958c03f4881c0a7f249f30f02be92ce23a24d3ba8",
+          "url": "https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/1dcc2bf5f955cc1224a3e1307256e1fe86b68dae/csv/Lahman/Pitching.csv"
+        },
+        "Teams": {
+          "revision": "1dcc2bf5f955cc1224a3e1307256e1fe86b68dae",
+          "rows": 3614,
+          "sha256": "9d1c390df5d2a422175f6bcfb56d099cfb9c5805586ba5e3f8c895a9952423ad",
+          "url": "https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/1dcc2bf5f955cc1224a3e1307256e1fe86b68dae/csv/Lahman/Teams.csv"
+        }
+      },
+      "weights": {
+        "attribution_url": "https://raw.githubusercontent.com/stormlightlabs/baseball/a3e064e998b52570ad0f2c3ab6d4c5e12aa8d1f1/web/src/routes/docs/attribution.md",
+        "license_caveat": "Static mirror verification, not parity with today's live table. Mirror MPL software license does not establish a separate upstream data license. Third-party constants are not project-owned. No live Fangraphs or Baseball-Reference requests; cFIP is derived from Lahman, not this file.",
+        "revision": "a3e064e998b52570ad0f2c3ab6d4c5e12aa8d1f1",
+        "rows": 155,
+        "sha256": "21f9cb2e86d90c43e100f1a9e36c3feab8bcc6595c437849e8c4a4433b914ce6",
+        "upstream_attribution": "Fangraphs Guts: https://www.fangraphs.com/tools/guts",
+        "url": "https://raw.githubusercontent.com/stormlightlabs/baseball/a3e064e998b52570ad0f2c3ab6d4c5e12aa8d1f1/data/fangraphs/woba.csv"
+      }
+    }
+  },
+  "state_hash": "sha256:807899bf7af68a07ea3795f06f4c68ed3712b55b2b52b1ffa4b3859b14fd089f"
+}

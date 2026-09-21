@@ -14,6 +14,7 @@ defmodule SabrJevWeb.Router do
     pipe_through :browser
 
     live "/", WorkbenchLive
+    live "/storylines", StorylinesLive
     live "/about", AboutLive
   end
 end
