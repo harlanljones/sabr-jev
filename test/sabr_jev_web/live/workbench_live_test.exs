@@ -68,7 +68,7 @@ defmodule SabrJevWeb.WorkbenchLiveTest do
     |> render_click()
 
     assert has_element?(view, "[data-season-card='batter:sotoju01:2025']")
-    assert has_element?(view, "[data-latch='escalate']")
+    assert has_element?(view, "[data-latch='review']")
     assert has_element?(view, "[data-probabilities='full']")
     assert has_element?(view, "[data-oracle='missing']")
     refute has_element?(view, "[data-no-recording]")
@@ -103,15 +103,30 @@ defmodule SabrJevWeb.WorkbenchLiveTest do
   test "verdict facet filters and empty verdicts are disabled, never offered", %{conn: conn} do
     {:ok, view, _html} = live(conn, "/")
 
-    assert has_element?(view, "select[data-facet='verdict'] option[value='act'][disabled]")
-
     view
     |> element("form[data-filters]")
     |> render_change(%{filter: %{verdict: "review"}})
 
     assert has_element?(view, "[data-card-id='batter:judgeaa01:2024']")
     refute has_element?(view, "[data-card-id='batter:sotoju01:2024']")
-    assert has_element?(view, "[data-filter-note]", "Showing 9 of 32")
+    assert has_element?(view, "[data-filter-note]", "Showing 10 of 37")
+
+    view
+    |> element("form[data-filters]")
+    |> render_change(%{filter: %{position: "pitcher"}})
+
+    assert has_element?(view, "select[data-facet='verdict'] option[value='act'][disabled]")
+  end
+
+  test "act verdicts exist and filter cleanly", %{conn: conn} do
+    {:ok, view, _html} = live(conn, "/")
+
+    view
+    |> element("form[data-filters]")
+    |> render_change(%{filter: %{verdict: "act"}})
+
+    assert has_element?(view, "[data-card-id='batter:guerrvl02:2021']")
+    assert has_element?(view, "[data-filter-note]", "Showing 4 of 37")
   end
 
   test "season facet filters to that season only", %{conn: conn} do
@@ -119,11 +134,15 @@ defmodule SabrJevWeb.WorkbenchLiveTest do
 
     view
     |> element("form[data-filters]")
-    |> render_change(%{filter: %{position: "all", season: "2021"}})
+    |> render_change(%{filter: %{position: "all"}})
+
+    view
+    |> element("form[data-filters]")
+    |> render_change(%{filter: %{season: "2021"}})
 
     assert has_element?(view, "[data-card-id='pitcher:burneco01:2021']")
     refute has_element?(view, "[data-card-id='batter:judgeaa01:2024']")
-    assert has_element?(view, "[data-filter-note]", "Showing 3 of 32")
+    assert has_element?(view, "[data-filter-note]", "Showing 4 of 37")
   end
 
   test "position facet switches the picker", %{conn: conn} do

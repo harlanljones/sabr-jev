@@ -84,7 +84,7 @@ defmodule SabrJev.LatchTest do
     assert {:error, _} = Latch.route(wrong_noul, pitcher)
   end
 
-  test "Noul uses max probability confidence and can review but never escalate" do
+  test "Noul keeps its own act/review and never demotes the season read" do
     card =
       put_in(@batter_card, ["oracle"], %{
         "year" => 2025,
@@ -94,21 +94,39 @@ defmodule SabrJev.LatchTest do
         "target" => "ops_plus_drop_ge_10_next"
       })
 
-    act_answers = Map.put(batter_answers(), "ops_plus_drop_ge_10_next", noul_answer(0.15))
-    assert {:ok, act} = Latch.route(act_answers, card)
+    weak_noul = Map.put(batter_answers(), "ops_plus_drop_ge_10_next", noul_answer(0.5))
+    assert {:ok, decision} = Latch.route(weak_noul, card)
+    assert decision.route == :act
+    assert decision.answer_routes["ops_plus_drop_ge_10_next"] == :review
+
+    strong_noul = Map.put(batter_answers(), "ops_plus_drop_ge_10_next", noul_answer(0.15))
+    assert {:ok, act} = Latch.route(strong_noul, card)
     assert act.route == :act
     assert act.answer_routes["ops_plus_drop_ge_10_next"] == :act
 
-    review_answers = Map.put(batter_answers(), "ops_plus_drop_ge_10_next", noul_answer(0.5))
-    assert {:ok, review} = Latch.route(review_answers, card)
-    assert review.route == :review
-    assert review.answer_routes["ops_plus_drop_ge_10_next"] == :review
-
     assert {:error, _} =
              Latch.route(
-               put_in(act_answers, ["ops_plus_drop_ge_10_next", "confidence"], 0.15),
+               put_in(strong_noul, ["ops_plus_drop_ge_10_next", "confidence"], 0.15),
                card
              )
+  end
+
+  test "choice/score bars sit at act 0.65 and review 0.45" do
+    for {confidence, expected} <- [
+          {0.9, :act},
+          {0.65, :act},
+          {0.6, :review},
+          {0.45, :review},
+          {0.44, :escalate}
+        ] do
+      answers = %{
+        "season_read" => choice_answer("stable", season_options(), confidence),
+        "confidence_in_signal" => score_answer(confidence),
+        "profile" => choice_answer("balanced", batter_profile_options(), confidence)
+      }
+
+      assert {:ok, %{route: ^expected}} = Latch.route(answers, @batter_card)
+    end
   end
 
   test "validates full role sample contract and state consistency before routing" do
@@ -144,11 +162,11 @@ defmodule SabrJev.LatchTest do
     assert decision.reasons == [:underqualified_sample]
   end
 
-  test "all thirty immutable real recordings validate and route with their full cards" do
+  test "all 35 immutable real recordings validate and route with their full cards" do
     catalog = Jason.decode!(File.read!("priv/data/cards.json"))
     cards = Map.new(catalog["cards"], &{&1["id"], &1})
     paths = Path.wildcard("priv/jev/recordings/*.json")
-    assert length(paths) == 30
+    assert length(paths) == 35
 
     for path <- paths do
       record = Jason.decode!(File.read!(path))

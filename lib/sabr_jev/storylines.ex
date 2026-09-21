@@ -70,6 +70,26 @@ defmodule SabrJev.Storylines do
       card_id: "pitcher:ohtansh01:2022",
       team: "LAA",
       hook: "The other half of the two-way season."
+    },
+    %{
+      card_id: "batter:guerrvl02:2021",
+      team: "TOR",
+      hook: "A Triple Crown chase that came up one AVG point short."
+    },
+    %{
+      card_id: "batter:alvaryo01:2022",
+      team: "HOU",
+      hook: "A swing rebuilt into 37 homers and a .413 OBP."
+    },
+    %{
+      card_id: "batter:goldspa01:2022",
+      team: "STL",
+      hook: "MVP at 34, on a Triple Crown pace into August."
+    },
+    %{
+      card_id: "pitcher:verlaju01:2022",
+      team: "HOU",
+      hook: "A no-hitter and a Cy Young, one year before the elbow."
     }
   ]
 

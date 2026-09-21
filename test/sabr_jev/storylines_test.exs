@@ -6,7 +6,7 @@ defmodule SabrJev.StorylinesTest do
   test "every storyline resolves to a recorded catalog card with a hook" do
     assert {:ok, catalog} = Catalog.load()
     entries = Storylines.list()
-    assert length(entries) == 20
+    assert length(entries) == 24
     assert length(Storylines.ids()) == length(Enum.uniq(Storylines.ids()))
 
     for entry <- entries do
