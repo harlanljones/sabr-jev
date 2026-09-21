@@ -3,6 +3,8 @@ defmodule SabrJevWeb.WorkbenchLive do
 
   alias SabrJev.Catalog
 
+  @lenses ["all", "breakout", "regression_risk"]
+
   @impl true
   def mount(_params, _session, socket) do
     case Catalog.load() do
@@ -14,6 +16,8 @@ defmodule SabrJevWeb.WorkbenchLive do
          |> assign(:catalog, catalog)
          |> assign(:load_error, nil)
          |> assign(:role, role)
+         |> assign(:lens, "all")
+         |> assign(:read_map, read_map(catalog))
          |> assign_card(default_card_id(catalog, role))}
 
       {:error, reason} ->
@@ -22,6 +26,8 @@ defmodule SabrJevWeb.WorkbenchLive do
          |> assign(:catalog, nil)
          |> assign(:load_error, inspect(reason))
          |> assign(:role, "batter")
+         |> assign(:lens, "all")
+         |> assign(:read_map, %{})
          |> assign(:card, nil)
          |> assign(:judgment, nil)
          |> assign(:judgment_error, nil)}
@@ -33,7 +39,22 @@ defmodule SabrJevWeb.WorkbenchLive do
     {:noreply,
      socket
      |> assign(:role, role)
-     |> assign_card(default_card_id(socket.assigns.catalog, role))}
+     |> assign_card(first_visible_id(socket.assigns, role, socket.assigns.lens))}
+  end
+
+  def handle_event("select-lens", %{"lens" => lens}, socket) when lens in @lenses do
+    socket = assign(socket, :lens, lens)
+    current = socket.assigns.card && socket.assigns.card["id"]
+    visible = visible_ids(socket.assigns)
+
+    next =
+      if Enum.member?(visible, current) do
+        socket
+      else
+        assign_card(socket, List.first(visible))
+      end
+
+    {:noreply, next}
   end
 
   def handle_event("select-card", %{"id" => id}, socket) do
@@ -53,7 +74,12 @@ defmodule SabrJevWeb.WorkbenchLive do
       <header>
         <p class="eyebrow">Season workbench</p>
         <h1>Sabr-Jev</h1>
-        <p>Precomputed season cards. Confidence-gated judgments.</p>
+        <p>
+          Season stats lie by omission. The verdict below says <strong>act</strong>, <strong>review</strong>, or
+          <strong>set aside</strong>
+          —
+          with full probabilities, never hype.
+        </p>
         <nav aria-label="Workbench">
           <a href={~p"/"} aria-current="page">Workbench</a>
           {" | "}
@@ -95,7 +121,7 @@ defmodule SabrJevWeb.WorkbenchLive do
         </div>
 
         <ul aria-label="Player seasons" class="card-picker">
-          <li :for={card <- Catalog.for_role(@catalog, @role)}>
+          <li :for={card <- visible_cards(@catalog, @role, @lens, @read_map)}>
             <button
               type="button"
               phx-click="select-card"
@@ -107,6 +133,24 @@ defmodule SabrJevWeb.WorkbenchLive do
             </button>
           </li>
         </ul>
+        <div role="group" aria-label="Lens">
+          <button
+            :for={lens <- lens_options()}
+            type="button"
+            phx-click="select-lens"
+            phx-value-lens={lens}
+            data-lens={lens}
+            aria-pressed={@lens == lens}
+            class={if(@lens == lens, do: "role-active", else: "role-idle")}
+          >
+            {lens_label(lens)}
+          </button>
+        </div>
+        <p :if={@lens != "all"} class="lens-note" data-lens-note="true">
+          {lens_label(@lens)}: showing {length(visible_cards(@catalog, @role, @lens, @read_map))} of {length(
+            Catalog.for_role(@catalog, @role)
+          )} — cards without a recorded {lens_label(@lens)} read are excluded, never guessed.
+        </p>
       </section>
 
       <section
@@ -163,6 +207,53 @@ defmodule SabrJevWeb.WorkbenchLive do
       [] -> nil
     end
   end
+
+  # Precomputed season_read per recorded card; unrecorded cards map to nil and
+  # are excluded from filtered lenses rather than guessed about.
+  defp read_map(nil), do: %{}
+
+  defp read_map(catalog) do
+    Map.new(Catalog.cards(catalog), fn card ->
+      read =
+        case Catalog.judgment(card) do
+          {:ok, %{record: %{"answers" => %{"season_read" => %{"choice" => choice}}}}} ->
+            choice
+
+          _ ->
+            nil
+        end
+
+      {card["id"], read}
+    end)
+  end
+
+  defp visible_cards(nil, _role, _lens, _read_map), do: []
+
+  defp visible_cards(catalog, role, "all", _read_map), do: Catalog.for_role(catalog, role)
+
+  defp visible_cards(catalog, role, lens, read_map) do
+    Enum.filter(Catalog.for_role(catalog, role), &(read_map[&1["id"]] == lens))
+  end
+
+  defp visible_ids(assigns) do
+    Enum.map(
+      visible_cards(assigns.catalog, assigns.role, assigns.lens, assigns.read_map),
+      & &1["id"]
+    )
+  end
+
+  defp first_visible_id(assigns, role, lens) do
+    case visible_cards(assigns.catalog, role, lens, assigns.read_map) do
+      [first | _] -> first["id"]
+      [] -> nil
+    end
+  end
+
+  defp lens_label("all"), do: "All seasons"
+  defp lens_label("breakout"), do: "Breakout check"
+  defp lens_label("regression_risk"), do: "Regression-risk watch"
+
+  defp lens_options, do: @lenses
 
   defp assign_card(socket, nil) do
     socket
@@ -310,6 +401,9 @@ defmodule SabrJevWeb.WorkbenchLive do
       <p data-no-recording="true">
         No judgment recorded for this card. No judgments have been requested for it.
       </p>
+      <p :if={!@card["sample"]["qualified"]} data-verdict="none">
+        No verdict — below minimum sample, so this card can never act.
+      </p>
       <p :if={is_nil(@card["oracle"])} data-noul-skip="true">
         Noul skipped: no T+1 season in the frozen source.
       </p>
@@ -332,10 +426,34 @@ defmodule SabrJevWeb.WorkbenchLive do
     ~H"""
     <section aria-labelledby="judgment-heading" class="judgment" data-latch={@judgment.decision.route}>
       <h3 id="judgment-heading">
-        Latch: {@judgment.decision.route}
+        The verdict: {@judgment.decision.route}
         <span class="provisional">provisional thresholds</span>
       </h3>
-      <p class="latch-model">Model: {@judgment.record["model"]}</p>
+      <p class="verdict-line" data-verdict={@judgment.decision.route}>
+        {verdict_line(@judgment.decision.route)}
+      </p>
+      <details class="audit" data-audit="true">
+        <summary>Shows its work — audit trail</summary>
+        <dl>
+          <div>
+            <dt>Model</dt><dd>{@judgment.record["model"]}</dd>
+          </div>
+          <div>
+            <dt>Recorded</dt><dd>{@judgment.record["recorded_at"]}</dd>
+          </div>
+          <div>
+            <dt>State hash</dt><dd><code>{short(@judgment.record["state_hash"])}</code></dd>
+          </div>
+          <div>
+            <dt>Questions hash</dt><dd><code>{short(@judgment.record["questions_hash"])}</code></dd>
+          </div>
+          <div>
+            <dt>Card artifact</dt><dd>
+              <code>{@judgment.record["source_lineage"]["card_artifact"]}</code>
+            </dd>
+          </div>
+        </dl>
+      </details>
       <ul class="answer-routes" aria-label="Per-answer routes">
         <li :for={{id, route} <- @judgment.decision.answer_routes}>
           {id}: {route}
@@ -479,4 +597,19 @@ defmodule SabrJevWeb.WorkbenchLive do
 
   defp pct(nil), do: "unavailable"
   defp pct(value) when is_number(value), do: "#{Float.round(value * 100.0, 1)}%"
+
+  defp verdict_line(:act), do: "Confidence clears the bar on every question — act on this read."
+  defp verdict_line("act"), do: verdict_line(:act)
+
+  defp verdict_line(:review),
+    do: "Confidence is mixed — the full probabilities below are the verdict, not a single call."
+
+  defp verdict_line("review"), do: verdict_line(:review)
+
+  defp verdict_line(_),
+    do: "The signal isn't there — one or more answers fell short, so set this read aside."
+
+  defp short("sha256:" <> rest), do: "sha256:" <> String.slice(rest, 0, 12) <> "…"
+  defp short(value) when is_binary(value), do: String.slice(value, 0, 19) <> "…"
+  defp short(_), do: "unavailable"
 end

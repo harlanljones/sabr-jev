@@ -23,9 +23,14 @@ footer { margin-top: 4rem; border-top: 1px solid #b0b4a8; padding-top: 1rem; }
 a { color: inherit; text-underline-offset: 0.2em; }
 nav { font-family: system-ui, sans-serif; font-size: 0.875rem; margin-top: 1rem; }
 
-/* Role toggle + card picker: scorebook tabs, not dashboard chrome. */
-[role="group"][aria-label="Role"] { display: flex; gap: 0; margin-bottom: 1rem; }
-[role="group"][aria-label="Role"] button {
+/* Role toggle + lens picker: scorebook tabs, not dashboard chrome. */
+[role="group"][aria-label="Role"], [role="group"][aria-label="Lens"] {
+  display: flex;
+  gap: 0;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+[role="group"][aria-label="Role"] button, [role="group"][aria-label="Lens"] button {
   font-family: system-ui, sans-serif;
   font-size: 0.875rem;
   background: transparent;
@@ -34,7 +39,10 @@ nav { font-family: system-ui, sans-serif; font-size: 0.875rem; margin-top: 1rem;
   padding: 0.4rem 1.2rem;
   cursor: pointer;
 }
-[role="group"][aria-label="Role"] button + button { border-left: none; }
+[role="group"][aria-label="Role"] button + button,
+[role="group"][aria-label="Lens"] button + button { border-left: none; }
+[role="group"][aria-label="Lens"] { margin-top: 1.5rem; }
+.lens-note { font-size: 0.9rem; font-style: italic; }
 .role-active { background: #202a27; color: #f5f2e9; }
 ul.card-picker { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
 ul.card-picker button {
@@ -103,6 +111,17 @@ ul.warnings { padding-left: 1.25rem; font-size: 0.9rem; }
   gap: 0.5rem 1.5rem;
 }
 .no-bold-note { font-size: 0.9rem; font-style: italic; }
+.verdict-line { font-size: 1.05rem; }
+details.audit { font-size: 0.875rem; margin: 1rem 0; }
+details.audit summary { cursor: pointer; font-family: system-ui, sans-serif; }
+details.audit dl { display: grid; gap: 0.25rem 2rem; margin-top: 0.5rem; }
+details.audit dt {
+  font-family: system-ui, sans-serif;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+details.audit dd { margin: 0 0 0.5rem; }
 .answer-block h4 { font-family: system-ui, sans-serif; font-size: 0.875rem; margin-bottom: 0; }
 
 /* Oracle: dashed eval-only pane, visually separate from judgment state. */
