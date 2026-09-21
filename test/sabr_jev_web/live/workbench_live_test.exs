@@ -74,15 +74,70 @@ defmodule SabrJevWeb.WorkbenchLiveTest do
     refute has_element?(view, "[data-no-recording]")
   end
 
-  test "underqualified samples cannot act", %{conn: conn} do
+  test "verdict framing states the plain-language call", %{conn: conn} do
+    {:ok, view, _html} = live(conn, "/")
+
+    view
+    |> element("[data-card-id='batter:judgeaa01:2024']")
+    |> render_click()
+
+    assert has_element?(
+             view,
+             "[data-verdict='review']",
+             "full probabilities below are the verdict"
+           )
+  end
+
+  test "audit trail shows its work", %{conn: conn} do
+    {:ok, view, _html} = live(conn, "/")
+
+    view
+    |> element("[data-card-id='batter:judgeaa01:2024']")
+    |> render_click()
+
+    assert has_element?(view, "[data-audit]", "jev-1.13.0")
+    assert has_element?(view, "[data-audit]", "sha256:")
+    assert has_element?(view, "[data-audit]", "priv/data/cards.json")
+  end
+
+  test "breakout lens filters to recorded breakout reads only", %{conn: conn} do
+    {:ok, view, _html} = live(conn, "/")
+
+    view
+    |> element("[data-lens='breakout']")
+    |> render_click()
+
+    assert has_element?(view, "[data-card-id='batter:judgeaa01:2024']")
+    assert has_element?(view, "[data-card-id='batter:sotoju01:2024']")
+    refute has_element?(view, "[data-card-id='batter:arozara01:2024']")
+    refute has_element?(view, "[data-card-id='batter:troutmi01:2024']")
+    assert has_element?(view, "[data-lens-note]", "4 of 6")
+  end
+
+  test "regression-risk lens surfaces the watch list", %{conn: conn} do
+    {:ok, view, _html} = live(conn, "/")
+
+    view
+    |> element("button[phx-value-role='pitcher']")
+    |> render_click()
+
+    view
+    |> element("[data-lens='regression_risk']")
+    |> render_click()
+
+    assert has_element?(view, "[data-card-id='pitcher:wheelza01:2024']")
+    refute has_element?(view, "[data-card-id='pitcher:skenepa01:2024']")
+    assert has_element?(view, "[data-lens-note]", "1 of 6")
+  end
+
+  test "underqualified cards get no verdict", %{conn: conn} do
     {:ok, view, _html} = live(conn, "/")
 
     view
     |> element("[data-card-id='batter:troutmi01:2024']")
     |> render_click()
 
-    assert has_element?(view, "[data-season-card='batter:troutmi01:2024']")
-    assert render(view) =~ "below minimum"
+    assert has_element?(view, "[data-verdict='none']", "can never act")
   end
 
   test "role toggle switches the picker", %{conn: conn} do
