@@ -21,41 +21,33 @@ prospective evaluation protocol instead of vibes.
 
 ## Results
 
-Twelve real cards from pinned Lahman inputs; ten immutable Jev recordings;
-every latch route computed from frozen artifacts, never invented.
+Thirty-two real cards from pinned Lahman inputs; thirty immutable Jev
+recordings; every latch route computed from frozen artifacts, never invented.
+Explore them as stories at `/storylines`, or card by card in the workbench.
 
-| Card | Sample | Oracle (T+1) | Recording | Latch |
-|---|---|---|---|---|
-| Randy Arozarena 2024 | 648 PA ✓ | present | 4 answers | **escalate** |
-| Aaron Judge 2024 | qualified ✓ | present | 4 answers | **review** |
-| Aaron Judge 2025 | qualified ✓ | none | 3 answers (no Noul) | **review** |
-| Juan Soto 2024 | qualified ✓ | present | 4 answers | **escalate** |
-| Juan Soto 2025 | qualified ✓ | none | 3 answers (no Noul) | **escalate** |
-| Mike Trout 2024 | 126 PA ✗ | none | none — honest empty state | — |
-| Jacob deGrom 2024 | 10.7 IP ✗ | none | none — honest empty state | — |
-| Paul Skenes 2024 | qualified ✓ | present | 4 answers | **escalate** |
-| Paul Skenes 2025 | qualified ✓ | none | 3 answers (no Noul) | **escalate** |
-| Gregory Soto 2024 | qualified ✓ | present | 4 answers | **escalate** |
-| Zack Wheeler 2024 | qualified ✓ | present | 4 answers | **escalate** |
-| Zack Wheeler 2025 | qualified ✓ | none | 3 answers (no Noul) | **escalate** |
-
-Route totals: 8 escalate · 2 review · 0 act · 2 unrecorded (underqualified demos).
+| Slice | Detail |
+|---|---|
+| Cards | 32 (16 batter, 16 pitcher, seasons 2021–2025) |
+| Recordings | 30 (25 with retrospective oracle Noul; 2025s Choice/Score-only; Strider 2023 has no oracle — 7 outs in 2024) |
+| Unrecorded | Trout 2024, deGrom 2024 (underqualified demos — honest empty states) |
+| Routes | 10 review · 18 escalate · 0 act — the model is a skeptic; every call shows full probabilities |
 
 | Check | Result |
 |---|---|
-| Offline Elixir suite (`mix test`, no API key) | 87 passed |
+| Offline Elixir suite (`mix test`, no API key) | 97 passed |
 | Python ETL + metric suite | 23 passed |
 | `mix format --check-formatted`, `mix compile --warnings-as-errors` | clean |
 | ETL rebuild of `priv/data/cards.json` | byte-identical |
-| Live `/` + `/about` | 200, content-checked |
+| Live `/`, `/storylines`, `/about` | 200, content-checked |
 | Prospective accuracy | **pending by design** — infrastructure only, first enrollable cohort 2026→2027 |
-| Latch thresholds | **provisional** (N=10, mini-labeled minimum N≥30) |
+| Latch thresholds | **provisional** (N=30 recordings, labeled minimum N≥30 for tuning — data exists, tuning does not) |
 
 ## Use cases
 
 | Who | Flow |
 |---|---|
 | Fan / analyst | Pick Batter\|Pitcher → player-season → read the card; the latch banner tells you whether the Jev read is actable, worth review, or escalated — with full probabilities, never a single bold claim under review |
+| Story explorer | Start at `/storylines`: twenty famous 2021–2025 seasons with hook lines and real verdict chips, filtered by breakout/regression lenses, deep-linked into the workbench |
 | Developer | `SabrJev.Catalog` is the trusted boundary: exact keys, `id == role:player_id:year`, outer metrics == judgment-state metrics, PA/IP == sample value — mutations rejected before any Jev use |
 | Researcher | Prospective pair (`mix sabr.capture` / `mix sabr.evaluate`) freezes predictions before the outcome season under a Jan-1 cutoff; Brier by role, baselines, reliability buckets, pending-not-negative outcomes |
 
@@ -70,7 +62,7 @@ flowchart LR
     Rec[priv/jev/recordings/\n10 immutable judgments] --> Judg[SabrJev.Judgments\nvalidate only]
     Catalog --> Judg
     Judg --> Latch[SabrJev.Latch\nact / review / escalate]
-    Catalog --> UI[WorkbenchLive / + AboutLive]
+    Catalog --> UI[WorkbenchLive / + StorylinesLive + AboutLive]
     Latch --> UI
 ```
 

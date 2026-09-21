@@ -111,7 +111,7 @@ defmodule SabrJevWeb.WorkbenchLiveTest do
     assert has_element?(view, "[data-card-id='batter:sotoju01:2024']")
     refute has_element?(view, "[data-card-id='batter:arozara01:2024']")
     refute has_element?(view, "[data-card-id='batter:troutmi01:2024']")
-    assert has_element?(view, "[data-lens-note]", "4 of 6")
+    assert has_element?(view, "[data-lens-note]", "13 of 16")
   end
 
   test "regression-risk lens surfaces the watch list", %{conn: conn} do
@@ -127,7 +127,7 @@ defmodule SabrJevWeb.WorkbenchLiveTest do
 
     assert has_element?(view, "[data-card-id='pitcher:wheelza01:2024']")
     refute has_element?(view, "[data-card-id='pitcher:skenepa01:2024']")
-    assert has_element?(view, "[data-lens-note]", "1 of 6")
+    assert has_element?(view, "[data-lens-note]", "4 of 16")
   end
 
   test "underqualified cards get no verdict", %{conn: conn} do

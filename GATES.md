@@ -5,7 +5,7 @@ Scope: Approved working thin slice with prospective infrastructure; future accur
 - [x] G1: All offline Elixir application and latch tests pass without API key.
   CHECK: env -u TYPESAFE_API_KEY mix test && printf 'OFFLINE_TESTS_PASS\n'
   EXPECT: OFFLINE_TESTS_PASS
-  EVIDENCE: 87 tests, 0 failures (env -u TYPESAFE_API_KEY mix test). Python ETL suite 23/23 OK.
+  EVIDENCE: 97 tests, 0 failures (env -u TYPESAFE_API_KEY mix test). Python ETL suite 23/23 OK.
 - [x] G2: ETL and metric tests pass.
   CHECK: python3 -m unittest discover -s tests -v
   EXPECT: OK
@@ -17,9 +17,9 @@ Scope: Approved working thin slice with prospective infrastructure; future accur
 - [x] G4: Real source lineage, recorded Jev responses, and recomputed cards verified.
   CHECK: mix test test/sabr_jev/record_task_test.exs
   EXPECT: recordings validate against frozen catalog; state_hash matches
-  EVIDENCE: 10 real recordings (6 with 2024->2025 oracle Noul + 4 qualified 2025 Choice/Score-only, no T+1) validate with correct state_hash against cards.json; catalog provenance has manifest_sha256 + per-source sha256 + license.
+  EVIDENCE: 30 real recordings (25 with 2021->2025 oracle Noul + 4 qualified 2025 Choice/Score-only + Strider 2023 without oracle) validate with correct state_hash against cards.json; catalog provenance has manifest_sha256 + per-source sha256 + license.
 - [x] G5: Live HTTP/LiveView workbench, review probabilities and /about exercised.
-  EVIDENCE: 12 LiveView tests (role toggle, card select, review/escalate lanes with full probabilities and no bold recommendation, recorded 2025 latch without Noul, honest no-recording + explicit Noul skip, labeled oracle, underqualified sample, footer, /about formulas/provenance/pending evaluation). Live server: / and /about 200 with 11/11 content checks. Catalog boundary: 7 tests green; outer/state metric equality and PA/IP-sample equality enforced before any Judgments/Latch use.
+  EVIDENCE: 20 LiveView tests (role toggle, card select, review/escalate lanes with full probabilities and no bold recommendation, recorded 2025 latch without Noul, honest no-recording + explicit Noul skip, labeled oracle, underqualified sample, verdict framing + audit trail, storyline index with real verdict chips + lens filter + workbench deep-link, footer, /about formulas/provenance/pending evaluation). Live server: /, /storylines and /about 200 with content checks. Catalog boundary: 7 tests green; outer/state metric equality and PA/IP-sample equality enforced before any Judgments/Latch use.
 - [x] G6: Prospective refusal, tamper detection, pending outcomes and scorer independently reviewed; no false accuracy claim.
   CHECK: mix test test/sabr_jev/{prospective,evaluation,capture_task,evaluate_task}_test.exs
   EXPECT: refusals for historical cohort, tampered ledger, late capture, mixed cutoffs, missing outcomes pending
