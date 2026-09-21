@@ -651,26 +651,94 @@ defmodule SabrJevWeb.WorkbenchLive do
       data-oracle="present"
     >
       <h3 id="oracle-heading">Oracle — retrospective eval-only pane, never sent to Jev</h3>
-      <dl>
-        <div>
-          <dt>Season</dt><dd>{@card["oracle"]["year"]}</dd>
-        </div>
-        <div>
-          <dt>Metric</dt><dd>{@card["oracle"]["metric"]}</dd>
-        </div>
-        <div>
-          <dt>Next-season value</dt><dd>{fmt(@card["oracle"]["value"])}</dd>
-        </div>
-        <div>
-          <dt>Label</dt><dd>{to_string(@card["oracle"]["label"])}</dd>
-        </div>
-        <div>
-          <dt>Target</dt><dd>{@card["oracle"]["target"]}</dd>
-        </div>
-      </dl>
+      <.oracle_table card={@card} />
+      <p class="lens-note">
+        Target: {@card["oracle"]["target"]} ·
+        Label: {to_string(@card["oracle"]["label"])} ·
+        Season: {@card["oracle"]["year"]}
+      </p>
     </section>
     """
   end
+
+  defp oracle_table(%{card: %{"role" => "batter"}} = assigns) do
+    ~H"""
+    <table class="probabilities" data-oracle-compare="batter">
+      <thead>
+        <tr>
+          <th scope="col">Metric</th>
+          <th scope="col">{@card["year"]}</th>
+          <th scope="col">{@card["oracle"]["year"]}</th>
+          <th scope="col">Change</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">OPS+ (Sabr-Jev)</th>
+          <td>{f1(@card["metrics"]["ops_plus"])}</td>
+          <td>{f1(@card["oracle"]["value"])}</td>
+          <td>{delta_ops(@card)}</td>
+        </tr>
+      </tbody>
+    </table>
+    """
+  end
+
+  defp oracle_table(%{card: %{"role" => "pitcher"}} = assigns) do
+    ~H"""
+    <table class="probabilities" data-oracle-compare="pitcher">
+      <thead>
+        <tr>
+          <th scope="col">Metric</th>
+          <th scope="col">{@card["year"]}</th>
+          <th scope="col">{@card["oracle"]["year"]}</th>
+          <th scope="col">Change</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">FIP</th>
+          <td>{f2(@card["metrics"]["fip"])}</td>
+          <td>{f2(@card["oracle"]["value"])}</td>
+          <td>{delta_fip(@card)}</td>
+        </tr>
+      </tbody>
+    </table>
+    """
+  end
+
+  # Deltas are comparison displays, not new metrics: the arithmetic is a
+  # difference of two already-published numbers, formatted for context.
+  defp delta_ops(%{"metrics" => %{"ops_plus" => t}, "oracle" => %{"value" => n}} = card)
+       when is_number(t) and is_number(n) do
+    change = Float.round(t - n, 1)
+    direction = if change >= 0.0, do: "dropped −", else: "improved +"
+    threshold = " (target: drop ≥ 10)"
+    "▼ #{direction}#{abs_str(change)}#{threshold}" <> remaining(card)
+  end
+
+  defp delta_ops(_), do: "unavailable"
+
+  defp delta_fip(%{"metrics" => %{"fip" => t}, "oracle" => %{"value" => n}})
+       when is_number(t) and is_number(n) do
+    change = Float.round(n - t, 2)
+    direction = if change >= 0.0, do: "rose +", else: "fell −"
+    "▲ #{direction}#{abs_str(change)} (target: rise ≥ 0.50)"
+  end
+
+  defp delta_fip(_), do: "unavailable"
+
+  defp remaining(%{"oracle" => %{"label" => true}}), do: " — target hit"
+  defp remaining(_), do: ""
+
+  defp abs_str(v) when v < 0, do: to_string(-v)
+  defp abs_str(v), do: to_string(v)
+
+  defp f1(nil), do: "unavailable"
+  defp f1(v) when is_number(v), do: :erlang.float_to_binary(v * 1.0, decimals: 1)
+
+  defp f2(nil), do: "unavailable"
+  defp f2(v) when is_number(v), do: :erlang.float_to_binary(v * 1.0, decimals: 2)
 
   defp act_label(%{"season_read" => %{"choice" => choice}}), do: choice
   defp act_label(_), do: "act"
