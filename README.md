@@ -1,9 +1,19 @@
 # Sabr-Jev — confidence-gated season-card workbench
 
 Batter|Pitcher season cards from free public stats (Lahman-primary), rendered
-as precomputed JSON state, gated by TypeSafe Jev Choice/Score/Noul with a
-**confidence latch**. The product is the latch — without it the demo is a
-stat table.
+as precomputed JSON state, graded by TypeSafe Jev Choice/Score/Noul behind a
+**confidence latch**. Season stats lie by omission — a hot OPS hides a lucky
+BABIP, a shiny ERA hides a bad FIP. Sabr-Jev's value is the verdict on the
+numbers: **act** on the read, **review** the full probabilities, or
+**escalate** when the signal isn't there. Small samples can never act,
+borderline calls never get a bold claim, and every judgment shows its work.
+Without the latch this is a stat table; with it, it's a second opinion you
+can audit.
+
+Use it to sanity-check a breakout season before buying in, to flag regression
+risk while there is still time to act on it, or as a reusable pattern for
+putting any AI judgment behind fail-closed types, frozen state hashes, and a
+prospective evaluation protocol instead of vibes.
 
 ## Quick start
 
