@@ -1,0 +1,17 @@
+{
+  "purpose": "Hand-selected real demonstration, not an evaluation holdout. IDs verified against pinned People/Batting/Pitching CSVs.",
+  "cards": [
+    "batter:arozara01:2024",
+    "batter:judgeaa01:2024",
+    "batter:judgeaa01:2025",
+    "batter:sotoju01:2024",
+    "batter:sotoju01:2025",
+    "batter:troutmi01:2024",
+    "pitcher:degroja01:2024",
+    "pitcher:skenepa01:2024",
+    "pitcher:skenepa01:2025",
+    "pitcher:sotogr01:2024",
+    "pitcher:wheelza01:2024",
+    "pitcher:wheelza01:2025"
+  ]
+}

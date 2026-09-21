@@ -1,0 +1,655 @@
+{
+  "cards": [
+    {
+      "id": "batter:arozara01:2024",
+      "judgment_state": {
+        "metrics": {
+          "babip": 0.27472527472527475,
+          "bb_pct": 0.11265432098765432,
+          "iso": 0.16939890710382513,
+          "k_pct": 0.26080246913580246,
+          "league_obp": 0.30886134625360073,
+          "league_slg": 0.394494850416871,
+          "obp": 0.3317901234567901,
+          "ops": 0.7197682655332929,
+          "ops_plus": 109.52409183856204,
+          "pa": 648,
+          "park_adjustment": 0.9820910493827161,
+          "slg": 0.3879781420765027,
+          "woba": 0.32039043209876544
+        },
+        "role": "batter",
+        "sample": {
+          "minimum": 200,
+          "value": 648
+        }
+      },
+      "metrics": {
+        "babip": 0.27472527472527475,
+        "bb_pct": 0.11265432098765432,
+        "iso": 0.16939890710382513,
+        "k_pct": 0.26080246913580246,
+        "league_obp": 0.30886134625360073,
+        "league_slg": 0.394494850416871,
+        "obp": 0.3317901234567901,
+        "ops": 0.7197682655332929,
+        "ops_plus": 109.52409183856204,
+        "pa": 648,
+        "park_adjustment": 0.9820910493827161,
+        "slg": 0.3879781420765027,
+        "woba": 0.32039043209876544
+      },
+      "oracle": {
+        "label": false,
+        "metric": "ops_plus",
+        "target": "ops_plus_drop_ge_10_next",
+        "value": 120.58198177534445,
+        "year": 2025
+      },
+      "player_id": "arozara01",
+      "player_name": "Randy Arozarena",
+      "role": "batter",
+      "sample": {
+        "minimum": 200,
+        "qualified": true,
+        "unit": "PA",
+        "value": 648
+      },
+      "warnings": [],
+      "year": 2024
+    },
+    {
+      "id": "batter:judgeaa01:2024",
+      "judgment_state": {
+        "metrics": {
+          "babip": 0.3674698795180723,
+          "bb_pct": 0.1891891891891892,
+          "iso": 0.37924865831842575,
+          "k_pct": 0.24324324324324326,
+          "league_obp": 0.30886134625360073,
+          "league_slg": 0.394494850416871,
+          "obp": 0.45803698435277385,
+          "ops": 1.159289220488731,
+          "ops_plus": 222.82982094177584,
+          "pa": 703,
+          "park_adjustment": 1.01,
+          "slg": 0.7012522361359571,
+          "woba": 0.47575549048316257
+        },
+        "role": "batter",
+        "sample": {
+          "minimum": 200,
+          "value": 703
+        }
+      },
+      "metrics": {
+        "babip": 0.3674698795180723,
+        "bb_pct": 0.1891891891891892,
+        "iso": 0.37924865831842575,
+        "k_pct": 0.24324324324324326,
+        "league_obp": 0.30886134625360073,
+        "league_slg": 0.394494850416871,
+        "obp": 0.45803698435277385,
+        "ops": 1.159289220488731,
+        "ops_plus": 222.82982094177584,
+        "pa": 703,
+        "park_adjustment": 1.01,
+        "slg": 0.7012522361359571,
+        "woba": 0.47575549048316257
+      },
+      "oracle": {
+        "label": false,
+        "metric": "ops_plus",
+        "target": "ops_plus_drop_ge_10_next",
+        "value": 215.38111856998512,
+        "year": 2025
+      },
+      "player_id": "judgeaa01",
+      "player_name": "Aaron Judge",
+      "role": "batter",
+      "sample": {
+        "minimum": 200,
+        "qualified": true,
+        "unit": "PA",
+        "value": 703
+      },
+      "warnings": [],
+      "year": 2024
+    },
+    {
+      "id": "batter:judgeaa01:2025",
+      "judgment_state": {
+        "metrics": {
+          "babip": 0.3761194029850746,
+          "bb_pct": 0.18262150220913106,
+          "iso": 0.3567467652495379,
+          "k_pct": 0.23564064801178203,
+          "league_obp": 0.31307445358195174,
+          "league_slg": 0.40554849122120606,
+          "obp": 0.4565537555228277,
+          "ops": 1.1441692823250458,
+          "ops_plus": 215.38111856998512,
+          "pa": 679,
+          "park_adjustment": 1.0,
+          "slg": 0.6876155268022182,
+          "woba": 0.4626111975116641
+        },
+        "role": "batter",
+        "sample": {
+          "minimum": 200,
+          "value": 679
+        }
+      },
+      "metrics": {
+        "babip": 0.3761194029850746,
+        "bb_pct": 0.18262150220913106,
+        "iso": 0.3567467652495379,
+        "k_pct": 0.23564064801178203,
+        "league_obp": 0.31307445358195174,
+        "league_slg": 0.40554849122120606,
+        "obp": 0.4565537555228277,
+        "ops": 1.1441692823250458,
+        "ops_plus": 215.38111856998512,
+        "pa": 679,
+        "park_adjustment": 1.0,
+        "slg": 0.6876155268022182,
+        "woba": 0.4626111975116641
+      },
+      "oracle": null,
+      "player_id": "judgeaa01",
+      "player_name": "Aaron Judge",
+      "role": "batter",
+      "sample": {
+        "minimum": 200,
+        "qualified": true,
+        "unit": "PA",
+        "value": 679
+      },
+      "warnings": [],
+      "year": 2025
+    },
+    {
+      "id": "batter:sotoju01:2024",
+      "judgment_state": {
+        "metrics": {
+          "babip": 0.2976190476190476,
+          "bb_pct": 0.18092566619915848,
+          "iso": 0.28125,
+          "k_pct": 0.16690042075736325,
+          "league_obp": 0.30886134625360073,
+          "league_slg": 0.394494850416871,
+          "obp": 0.41935483870967744,
+          "ops": 0.9887992831541219,
+          "ops_plus": 177.3487281636114,
+          "pa": 713,
+          "park_adjustment": 1.01,
+          "slg": 0.5694444444444444,
+          "woba": 0.4206005625879043
+        },
+        "role": "batter",
+        "sample": {
+          "minimum": 200,
+          "value": 713
+        }
+      },
+      "metrics": {
+        "babip": 0.2976190476190476,
+        "bb_pct": 0.18092566619915848,
+        "iso": 0.28125,
+        "k_pct": 0.16690042075736325,
+        "league_obp": 0.30886134625360073,
+        "league_slg": 0.394494850416871,
+        "obp": 0.41935483870967744,
+        "ops": 0.9887992831541219,
+        "ops_plus": 177.3487281636114,
+        "pa": 713,
+        "park_adjustment": 1.01,
+        "slg": 0.5694444444444444,
+        "woba": 0.4206005625879043
+      },
+      "oracle": {
+        "label": true,
+        "metric": "ops_plus",
+        "target": "ops_plus_drop_ge_10_next",
+        "value": 160.49744033300834,
+        "year": 2025
+      },
+      "player_id": "sotoju01",
+      "player_name": "Juan Soto",
+      "role": "batter",
+      "sample": {
+        "minimum": 200,
+        "qualified": true,
+        "unit": "PA",
+        "value": 713
+      },
+      "warnings": [],
+      "year": 2024
+    },
+    {
+      "id": "batter:sotoju01:2025",
+      "judgment_state": {
+        "metrics": {
+          "babip": 0.2704714640198511,
+          "bb_pct": 0.17787114845938376,
+          "iso": 0.2616984402079723,
+          "k_pct": 0.19187675070028012,
+          "league_obp": 0.3172181949584985,
+          "league_slg": 0.4020714250818311,
+          "obp": 0.3955119214586255,
+          "ops": 0.920641904127603,
+          "ops_plus": 160.49744033300834,
+          "pa": 714,
+          "park_adjustment": 0.98,
+          "slg": 0.5251299826689775,
+          "woba": 0.3896728571428571
+        },
+        "role": "batter",
+        "sample": {
+          "minimum": 200,
+          "value": 714
+        }
+      },
+      "metrics": {
+        "babip": 0.2704714640198511,
+        "bb_pct": 0.17787114845938376,
+        "iso": 0.2616984402079723,
+        "k_pct": 0.19187675070028012,
+        "league_obp": 0.3172181949584985,
+        "league_slg": 0.4020714250818311,
+        "obp": 0.3955119214586255,
+        "ops": 0.920641904127603,
+        "ops_plus": 160.49744033300834,
+        "pa": 714,
+        "park_adjustment": 0.98,
+        "slg": 0.5251299826689775,
+        "woba": 0.3896728571428571
+      },
+      "oracle": null,
+      "player_id": "sotoju01",
+      "player_name": "Juan Soto",
+      "role": "batter",
+      "sample": {
+        "minimum": 200,
+        "qualified": true,
+        "unit": "PA",
+        "value": 714
+      },
+      "warnings": [],
+      "year": 2025
+    },
+    {
+      "id": "batter:troutmi01:2024",
+      "judgment_state": {
+        "metrics": {
+          "babip": 0.19444444444444445,
+          "bb_pct": 0.12698412698412698,
+          "iso": 0.3211009174311927,
+          "k_pct": 0.21428571428571427,
+          "league_obp": 0.30886134625360073,
+          "league_slg": 0.394494850416871,
+          "obp": 0.3253968253968254,
+          "ops": 0.8666812290665502,
+          "ops_plus": 140.16157226450042,
+          "pa": 126,
+          "park_adjustment": 1.01,
+          "slg": 0.5412844036697247,
+          "woba": 0.365528
+        },
+        "role": "batter",
+        "sample": {
+          "minimum": 200,
+          "value": 126
+        }
+      },
+      "metrics": {
+        "babip": 0.19444444444444445,
+        "bb_pct": 0.12698412698412698,
+        "iso": 0.3211009174311927,
+        "k_pct": 0.21428571428571427,
+        "league_obp": 0.30886134625360073,
+        "league_slg": 0.394494850416871,
+        "obp": 0.3253968253968254,
+        "ops": 0.8666812290665502,
+        "ops_plus": 140.16157226450042,
+        "pa": 126,
+        "park_adjustment": 1.01,
+        "slg": 0.5412844036697247,
+        "woba": 0.365528
+      },
+      "oracle": null,
+      "player_id": "troutmi01",
+      "player_name": "Mike Trout",
+      "role": "batter",
+      "sample": {
+        "minimum": 200,
+        "qualified": false,
+        "unit": "PA",
+        "value": 126
+      },
+      "warnings": [
+        "Below minimum sample or sample unavailable"
+      ],
+      "year": 2024
+    },
+    {
+      "id": "pitcher:degroja01:2024",
+      "judgment_state": {
+        "metrics": {
+          "bb_per_9": 0.84375,
+          "era": 1.6875,
+          "fip": 2.2485476925576857,
+          "hr_per_9": 0.84375,
+          "ip": 10.666666666666666,
+          "k_bb_pct": 0.29545454545454547,
+          "k_per_9": 11.8125,
+          "league_cfip": 3.0922976925576857
+        },
+        "role": "pitcher",
+        "sample": {
+          "minimum": 50,
+          "value": 10.666666666666666
+        }
+      },
+      "metrics": {
+        "bb_per_9": 0.84375,
+        "era": 1.6875,
+        "fip": 2.2485476925576857,
+        "hr_per_9": 0.84375,
+        "ip": 10.666666666666666,
+        "k_bb_pct": 0.29545454545454547,
+        "k_per_9": 11.8125,
+        "league_cfip": 3.0922976925576857
+      },
+      "oracle": null,
+      "player_id": "degroja01",
+      "player_name": "Jacob deGrom",
+      "role": "pitcher",
+      "sample": {
+        "minimum": 50,
+        "qualified": false,
+        "unit": "IP",
+        "value": 10.666666666666666
+      },
+      "warnings": [
+        "Below minimum sample or sample unavailable"
+      ],
+      "year": 2024
+    },
+    {
+      "id": "pitcher:skenepa01:2024",
+      "judgment_state": {
+        "metrics": {
+          "bb_per_9": 2.1654135338345863,
+          "era": 1.962406015037594,
+          "fip": 2.5187256747194566,
+          "hr_per_9": 0.6766917293233082,
+          "ip": 133.0,
+          "k_bb_pct": 0.26848249027237353,
+          "k_per_9": 11.503759398496241,
+          "league_cfip": 3.240530185997652
+        },
+        "role": "pitcher",
+        "sample": {
+          "minimum": 50,
+          "value": 133.0
+        }
+      },
+      "metrics": {
+        "bb_per_9": 2.1654135338345863,
+        "era": 1.962406015037594,
+        "fip": 2.5187256747194566,
+        "hr_per_9": 0.6766917293233082,
+        "ip": 133.0,
+        "k_bb_pct": 0.26848249027237353,
+        "k_per_9": 11.503759398496241,
+        "league_cfip": 3.240530185997652
+      },
+      "oracle": {
+        "label": false,
+        "metric": "fip",
+        "target": "fip_rise_ge_0_50_next",
+        "value": 2.4466865076590802,
+        "year": 2025
+      },
+      "player_id": "skenepa01",
+      "player_name": "Paul Skenes",
+      "role": "pitcher",
+      "sample": {
+        "minimum": 50,
+        "qualified": true,
+        "unit": "IP",
+        "value": 133.0
+      },
+      "warnings": [],
+      "year": 2024
+    },
+    {
+      "id": "pitcher:skenepa01:2025",
+      "judgment_state": {
+        "metrics": {
+          "bb_per_9": 2.0142095914742453,
+          "era": 1.9662522202486679,
+          "fip": 2.4466865076590802,
+          "hr_per_9": 0.5275310834813499,
+          "ip": 187.66666666666666,
+          "k_bb_pct": 0.2373806275579809,
+          "k_per_9": 10.35879218472469,
+          "league_cfip": 3.2193330440711585
+        },
+        "role": "pitcher",
+        "sample": {
+          "minimum": 50,
+          "value": 187.66666666666666
+        }
+      },
+      "metrics": {
+        "bb_per_9": 2.0142095914742453,
+        "era": 1.9662522202486679,
+        "fip": 2.4466865076590802,
+        "hr_per_9": 0.5275310834813499,
+        "ip": 187.66666666666666,
+        "k_bb_pct": 0.2373806275579809,
+        "k_per_9": 10.35879218472469,
+        "league_cfip": 3.2193330440711585
+      },
+      "oracle": null,
+      "player_id": "skenepa01",
+      "player_name": "Paul Skenes",
+      "role": "pitcher",
+      "sample": {
+        "minimum": 50,
+        "qualified": true,
+        "unit": "IP",
+        "value": 187.66666666666666
+      },
+      "warnings": [],
+      "year": 2025
+    },
+    {
+      "id": "pitcher:sotogr01:2024",
+      "judgment_state": {
+        "metrics": {
+          "bb_per_9": 4.584905660377358,
+          "era": 4.415094339622642,
+          "fip": 3.7005533171151477,
+          "hr_per_9": 0.6792452830188679,
+          "ip": 53.0,
+          "k_bb_pct": 0.1557377049180328,
+          "k_per_9": 11.037735849056604,
+          "league_cfip": 3.1911193548509966
+        },
+        "role": "pitcher",
+        "sample": {
+          "minimum": 50,
+          "value": 53.0
+        }
+      },
+      "metrics": {
+        "bb_per_9": 4.584905660377358,
+        "era": 4.415094339622642,
+        "fip": 3.7005533171151477,
+        "hr_per_9": 0.6792452830188679,
+        "ip": 53.0,
+        "k_bb_pct": 0.1557377049180328,
+        "k_per_9": 11.037735849056604,
+        "league_cfip": 3.1911193548509966
+      },
+      "oracle": {
+        "label": false,
+        "metric": "fip",
+        "target": "fip_rise_ge_0_50_next",
+        "value": 3.3998190611489787,
+        "year": 2025
+      },
+      "player_id": "sotogr01",
+      "player_name": "Gregory Soto",
+      "role": "pitcher",
+      "sample": {
+        "minimum": 50,
+        "qualified": true,
+        "unit": "IP",
+        "value": 53.0
+      },
+      "warnings": [],
+      "year": 2024
+    },
+    {
+      "id": "pitcher:wheelza01:2024",
+      "judgment_state": {
+        "metrics": {
+          "bb_per_9": 2.34,
+          "era": 2.565,
+          "fip": 3.200530185997652,
+          "hr_per_9": 0.9,
+          "ip": 200.0,
+          "k_bb_pct": 0.21855146124523506,
+          "k_per_9": 10.08,
+          "league_cfip": 3.240530185997652
+        },
+        "role": "pitcher",
+        "sample": {
+          "minimum": 50,
+          "value": 200.0
+        }
+      },
+      "metrics": {
+        "bb_per_9": 2.34,
+        "era": 2.565,
+        "fip": 3.200530185997652,
+        "hr_per_9": 0.9,
+        "ip": 200.0,
+        "k_bb_pct": 0.21855146124523506,
+        "k_per_9": 10.08,
+        "league_cfip": 3.240530185997652
+      },
+      "oracle": {
+        "label": false,
+        "metric": "fip",
+        "target": "fip_rise_ge_0_50_next",
+        "value": 3.0857027545388647,
+        "year": 2025
+      },
+      "player_id": "wheelza01",
+      "player_name": "Zack Wheeler",
+      "role": "pitcher",
+      "sample": {
+        "minimum": 50,
+        "qualified": true,
+        "unit": "IP",
+        "value": 200.0
+      },
+      "warnings": [],
+      "year": 2024
+    },
+    {
+      "id": "pitcher:wheelza01:2025",
+      "judgment_state": {
+        "metrics": {
+          "bb_per_9": 1.9844097995545658,
+          "era": 2.706013363028953,
+          "fip": 3.0857027545388647,
+          "hr_per_9": 1.1425389755011135,
+          "ip": 149.66666666666666,
+          "k_bb_pct": 0.27692307692307694,
+          "k_per_9": 11.726057906458797,
+          "league_cfip": 3.2193330440711585
+        },
+        "role": "pitcher",
+        "sample": {
+          "minimum": 50,
+          "value": 149.66666666666666
+        }
+      },
+      "metrics": {
+        "bb_per_9": 1.9844097995545658,
+        "era": 2.706013363028953,
+        "fip": 3.0857027545388647,
+        "hr_per_9": 1.1425389755011135,
+        "ip": 149.66666666666666,
+        "k_bb_pct": 0.27692307692307694,
+        "k_per_9": 11.726057906458797,
+        "league_cfip": 3.2193330440711585
+      },
+      "oracle": null,
+      "player_id": "wheelza01",
+      "player_name": "Zack Wheeler",
+      "role": "pitcher",
+      "sample": {
+        "minimum": 50,
+        "qualified": true,
+        "unit": "IP",
+        "value": 149.66666666666666
+      },
+      "warnings": [],
+      "year": 2025
+    }
+  ],
+  "provenance": {
+    "formula_version": "sabr-jev-v1",
+    "latest_season": 2025,
+    "license": "Lahman database: CC-BY-SA-3.0 Unported; SABR, donated by Sean Lahman",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "manifest_sha256": "eb3b3b9d52bd3af97d97bc29853607dc5d720bd2176b43419bbf1d8a1568908b",
+    "notice_url": "https://sabr.box.com/shared/static/qtgh1olzcaauz5x234wqx8huixizff8l.txt",
+    "oracle_policy": "Retrospective only; both seasons must meet PA>=200 or IP>=50",
+    "purpose": "Selected demonstration; not an evaluation holdout",
+    "scope": "AL/NL",
+    "sources": {
+      "Batting": {
+        "revision": "1dcc2bf5f955cc1224a3e1307256e1fe86b68dae",
+        "rows": 128598,
+        "sha256": "a4083e2d4bacf411c352686fd7c0696eaa4bc8719b718db5e9c45ac90fd95b35",
+        "url": "https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/1dcc2bf5f955cc1224a3e1307256e1fe86b68dae/csv/Lahman/Batting.csv"
+      },
+      "People": {
+        "revision": "1dcc2bf5f955cc1224a3e1307256e1fe86b68dae",
+        "rows": 24270,
+        "sha256": "33aacfdea45b8e19166e4d725191ac6b874b334260584d2999107b42cc746a81",
+        "url": "https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/1dcc2bf5f955cc1224a3e1307256e1fe86b68dae/csv/Lahman/People.csv"
+      },
+      "Pitching": {
+        "revision": "1dcc2bf5f955cc1224a3e1307256e1fe86b68dae",
+        "rows": 57630,
+        "sha256": "6c45460dabbe2384b6ede22958c03f4881c0a7f249f30f02be92ce23a24d3ba8",
+        "url": "https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/1dcc2bf5f955cc1224a3e1307256e1fe86b68dae/csv/Lahman/Pitching.csv"
+      },
+      "Teams": {
+        "revision": "1dcc2bf5f955cc1224a3e1307256e1fe86b68dae",
+        "rows": 3614,
+        "sha256": "9d1c390df5d2a422175f6bcfb56d099cfb9c5805586ba5e3f8c895a9952423ad",
+        "url": "https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/1dcc2bf5f955cc1224a3e1307256e1fe86b68dae/csv/Lahman/Teams.csv"
+      }
+    },
+    "weights": {
+      "attribution_url": "https://raw.githubusercontent.com/stormlightlabs/baseball/a3e064e998b52570ad0f2c3ab6d4c5e12aa8d1f1/web/src/routes/docs/attribution.md",
+      "license_caveat": "Static mirror verification, not parity with today's live table. Mirror MPL software license does not establish a separate upstream data license. Third-party constants are not project-owned. No live Fangraphs or Baseball-Reference requests; cFIP is derived from Lahman, not this file.",
+      "revision": "a3e064e998b52570ad0f2c3ab6d4c5e12aa8d1f1",
+      "rows": 155,
+      "sha256": "21f9cb2e86d90c43e100f1a9e36c3feab8bcc6595c437849e8c4a4433b914ce6",
+      "upstream_attribution": "Fangraphs Guts: https://www.fangraphs.com/tools/guts",
+      "url": "https://raw.githubusercontent.com/stormlightlabs/baseball/a3e064e998b52570ad0f2c3ab6d4c5e12aa8d1f1/data/fangraphs/woba.csv"
+    }
+  },
+  "schema_version": 1
+}

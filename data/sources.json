@@ -1,0 +1,42 @@
+{
+  "manifest_version": 1,
+  "latest_season": 2025,
+  "license": "Lahman database: CC-BY-SA-3.0 Unported; SABR, donated by Sean Lahman",
+  "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "notice_url": "https://sabr.box.com/shared/static/qtgh1olzcaauz5x234wqx8huixizff8l.txt",
+  "sources": {
+    "Batting": {
+      "url": "https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/1dcc2bf5f955cc1224a3e1307256e1fe86b68dae/csv/Lahman/Batting.csv",
+      "revision": "1dcc2bf5f955cc1224a3e1307256e1fe86b68dae",
+      "sha256": "a4083e2d4bacf411c352686fd7c0696eaa4bc8719b718db5e9c45ac90fd95b35",
+      "rows": 128598
+    },
+    "Pitching": {
+      "url": "https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/1dcc2bf5f955cc1224a3e1307256e1fe86b68dae/csv/Lahman/Pitching.csv",
+      "revision": "1dcc2bf5f955cc1224a3e1307256e1fe86b68dae",
+      "sha256": "6c45460dabbe2384b6ede22958c03f4881c0a7f249f30f02be92ce23a24d3ba8",
+      "rows": 57630
+    },
+    "Teams": {
+      "url": "https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/1dcc2bf5f955cc1224a3e1307256e1fe86b68dae/csv/Lahman/Teams.csv",
+      "revision": "1dcc2bf5f955cc1224a3e1307256e1fe86b68dae",
+      "sha256": "9d1c390df5d2a422175f6bcfb56d099cfb9c5805586ba5e3f8c895a9952423ad",
+      "rows": 3614
+    },
+    "People": {
+      "url": "https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/1dcc2bf5f955cc1224a3e1307256e1fe86b68dae/csv/Lahman/People.csv",
+      "revision": "1dcc2bf5f955cc1224a3e1307256e1fe86b68dae",
+      "sha256": "33aacfdea45b8e19166e4d725191ac6b874b334260584d2999107b42cc746a81",
+      "rows": 24270
+    }
+  },
+  "weights": {
+    "url": "https://raw.githubusercontent.com/stormlightlabs/baseball/a3e064e998b52570ad0f2c3ab6d4c5e12aa8d1f1/data/fangraphs/woba.csv",
+    "revision": "a3e064e998b52570ad0f2c3ab6d4c5e12aa8d1f1",
+    "sha256": "21f9cb2e86d90c43e100f1a9e36c3feab8bcc6595c437849e8c4a4433b914ce6",
+    "rows": 155,
+    "attribution_url": "https://raw.githubusercontent.com/stormlightlabs/baseball/a3e064e998b52570ad0f2c3ab6d4c5e12aa8d1f1/web/src/routes/docs/attribution.md",
+    "upstream_attribution": "Fangraphs Guts: https://www.fangraphs.com/tools/guts",
+    "license_caveat": "Static mirror verification, not parity with today's live table. Mirror MPL software license does not establish a separate upstream data license. Third-party constants are not project-owned. No live Fangraphs or Baseball-Reference requests; cFIP is derived from Lahman, not this file."
+  }
+}
