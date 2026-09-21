@@ -3,7 +3,9 @@ defmodule SabrJevWeb.StorylinesLive do
 
   alias SabrJev.{Catalog, Storylines}
 
-  @lenses ["all", "breakout", "regression_risk"]
+  @positions ["batter", "pitcher"]
+  @verdicts ["act", "review", "escalate"]
+  @empty_filter %{"position" => "all", "season" => "all", "verdict" => "all"}
 
   @impl true
   def mount(_params, _session, socket) do
@@ -13,7 +15,7 @@ defmodule SabrJevWeb.StorylinesLive do
          socket
          |> assign(:catalog, catalog)
          |> assign(:load_error, nil)
-         |> assign(:lens, "all")
+         |> assign(:filter, @empty_filter)
          |> assign(:rows, build_rows(catalog))}
 
       {:error, reason} ->
@@ -21,14 +23,20 @@ defmodule SabrJevWeb.StorylinesLive do
          socket
          |> assign(:catalog, nil)
          |> assign(:load_error, inspect(reason))
-         |> assign(:lens, "all")
+         |> assign(:filter, @empty_filter)
          |> assign(:rows, [])}
     end
   end
 
   @impl true
-  def handle_event("select-lens", %{"lens" => lens}, socket) when lens in @lenses do
-    {:noreply, assign(socket, :lens, lens)}
+  def handle_event("filter", %{"filter" => params}, socket) when is_map(params) do
+    filter =
+      @empty_filter
+      |> Map.merge(Map.take(socket.assigns.filter, Map.keys(@empty_filter)))
+      |> Map.merge(sanitize_filter(params, socket.assigns.rows))
+      |> coerce_empties(socket.assigns.rows)
+
+    {:noreply, assign(socket, :filter, filter)}
   end
 
   @impl true
@@ -59,26 +67,63 @@ defmodule SabrJevWeb.StorylinesLive do
       </section>
 
       <section :if={!@load_error} aria-label="Storyline selection">
-        <div role="group" aria-label="Lens">
-          <button
-            :for={lens <- lens_options()}
-            type="button"
-            phx-click="select-lens"
-            phx-value-lens={lens}
-            data-lens={lens}
-            aria-pressed={@lens == lens}
-            class={if(@lens == lens, do: "role-active", else: "role-idle")}
-          >
-            {lens_label(lens)}
-          </button>
-        </div>
-        <p class="lens-note" data-lens-note="true">
-          Showing {length(visible_rows(@rows, @lens))} of {length(@rows)} —
+        <form phx-change="filter" class="filters" data-filters="true" aria-label="Filter storylines">
+          <label>
+            Position
+            <select name="filter[position]" data-facet="position">
+              <option value="all" selected={@filter["position"] == "all"}>
+                All ({facet_count(@rows, @filter, :position, "all")})
+              </option>
+              <option
+                :for={position <- position_options()}
+                value={position}
+                selected={@filter["position"] == position}
+                disabled={facet_count(@rows, @filter, :position, position) == 0}
+              >
+                {String.capitalize(position)} ({facet_count(@rows, @filter, :position, position)})
+              </option>
+            </select>
+          </label>
+          <label>
+            Season
+            <select name="filter[season]" data-facet="season">
+              <option value="all" selected={@filter["season"] == "all"}>
+                All ({facet_count(@rows, @filter, :season, "all")})
+              </option>
+              <option
+                :for={season <- season_options(@rows)}
+                value={season}
+                selected={@filter["season"] == season}
+                disabled={facet_count(@rows, @filter, :season, season) == 0}
+              >
+                {season} ({facet_count(@rows, @filter, :season, season)})
+              </option>
+            </select>
+          </label>
+          <label>
+            Verdict
+            <select name="filter[verdict]" data-facet="verdict">
+              <option value="all" selected={@filter["verdict"] == "all"}>
+                All ({facet_count(@rows, @filter, :verdict, "all")})
+              </option>
+              <option
+                :for={verdict <- verdict_options()}
+                value={verdict}
+                selected={@filter["verdict"] == verdict}
+                disabled={facet_count(@rows, @filter, :verdict, verdict) == 0}
+              >
+                {verdict_label(verdict)} ({facet_count(@rows, @filter, :verdict, verdict)})
+              </option>
+            </select>
+          </label>
+        </form>
+        <p class="lens-note" data-filter-note="true">
+          Showing {length(visible_rows(@rows, @filter))} of {length(@rows)} —
           verdicts are recorded judgments, never guesses.
         </p>
         <div id="storyline-list">
           <a
-            :for={row <- visible_rows(@rows, @lens)}
+            :for={row <- visible_rows(@rows, @filter)}
             class="storyline"
             data-storyline={row.card["id"]}
             href={~p"/?#{%{card: row.card["id"]}}"}
@@ -89,7 +134,9 @@ defmodule SabrJevWeb.StorylinesLive do
               <p class="hook">{row.hook}</p>
               <p class="nums">{headlines(row.card)}</p>
             </span>
-            <span class="verdict {row.route}" data-verdict={row.route}>{verdict_label(row.route)}</span>
+            <span class="verdict {row.route}" data-verdict={row.route}>{verdict_label(
+              Atom.to_string(row.route)
+            )}</span>
           </a>
         </div>
       </section>
@@ -120,17 +167,76 @@ defmodule SabrJevWeb.StorylinesLive do
     end
   end
 
-  defp visible_rows(rows, "all"), do: rows
-  defp visible_rows(rows, lens), do: Enum.filter(rows, &(&1.read == lens))
-  defp lens_label("all"), do: "All twenty"
-  defp lens_label("breakout"), do: "Breakout check"
-  defp lens_label("regression_risk"), do: "Regression watch"
+  defp position_options, do: @positions
+  defp verdict_options, do: @verdicts
 
-  defp lens_options, do: @lenses
+  defp season_options(rows) do
+    rows |> Enum.map(&to_string(&1.card["year"])) |> Enum.uniq() |> Enum.sort()
+  end
 
-  defp verdict_label(:act), do: "act"
-  defp verdict_label(:review), do: "review"
-  defp verdict_label(:escalate), do: "set aside"
+  defp visible_rows(rows, filter) do
+    Enum.filter(rows, fn row ->
+      (filter["position"] == "all" or row.card["role"] == filter["position"]) and
+        (filter["season"] == "all" or to_string(row.card["year"]) == filter["season"]) and
+        (filter["verdict"] == "all" or Atom.to_string(row.route) == filter["verdict"])
+    end)
+  end
+
+  defp facet_count(rows, filter, facet, value) do
+    others = Map.delete(filter, Atom.to_string(facet))
+
+    Enum.count(rows, fn row ->
+      Enum.all?(others, fn
+        {"position", "all"} -> true
+        {"position", position} -> row.card["role"] == position
+        {"season", "all"} -> true
+        {"season", season} -> to_string(row.card["year"]) == season
+        {"verdict", "all"} -> true
+        {"verdict", verdict} -> Atom.to_string(row.route) == verdict
+      end) and facet_match?(facet, value, row)
+    end)
+  end
+
+  defp facet_match?(_facet, "all", _row), do: true
+  defp facet_match?(:position, position, row), do: row.card["role"] == position
+  defp facet_match?(:season, season, row), do: to_string(row.card["year"]) == season
+  defp facet_match?(:verdict, verdict, row), do: Atom.to_string(row.route) == verdict
+
+  defp sanitize_filter(params, rows) do
+    seasons = season_options(rows)
+
+    %{}
+    |> put_valid(params, "position", ["all" | @positions])
+    |> put_valid(params, "season", ["all" | seasons])
+    |> put_valid(params, "verdict", ["all" | @verdicts])
+  end
+
+  defp put_valid(acc, params, key, allowed) do
+    case Map.fetch(params, key) do
+      {:ok, value} when is_binary(value) ->
+        if value in allowed, do: Map.put(acc, key, value), else: acc
+
+      _ ->
+        acc
+    end
+  end
+
+  defp coerce_empties(filter, rows) do
+    Map.new(filter, fn {key, value} ->
+      facet = String.to_existing_atom(key)
+
+      if value != "all" and facet_count(rows, filter, facet, value) == 0 do
+        {key, "all"}
+      else
+        {key, value}
+      end
+    end)
+  end
+
+  defp verdict_label("escalate"), do: "set aside"
+  defp verdict_label("all"), do: "All verdicts"
+  defp verdict_label("act"), do: "act"
+  defp verdict_label("review"), do: "review"
 
   defp headlines(%{"role" => "batter", "metrics" => m}) do
     "OPS+ (Sabr-Jev) #{fmt(m["ops_plus"])} · wOBA #{fmt(m["woba"])} · #{fmt(m["pa"])} PA"

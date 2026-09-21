@@ -36,8 +36,8 @@ defmodule SabrJevWeb.WorkbenchLiveTest do
     {:ok, view, _html} = live(conn, "/")
 
     view
-    |> element("button[phx-value-role='pitcher']")
-    |> render_click()
+    |> element("form[data-filters]")
+    |> render_change(%{filter: %{position: "pitcher"}})
 
     view
     |> element("[data-card-id='pitcher:skenepa01:2024']")
@@ -100,34 +100,42 @@ defmodule SabrJevWeb.WorkbenchLiveTest do
     assert has_element?(view, "[data-audit]", "priv/data/cards.json")
   end
 
-  test "breakout lens filters to recorded breakout reads only", %{conn: conn} do
+  test "verdict facet filters and empty verdicts are disabled, never offered", %{conn: conn} do
     {:ok, view, _html} = live(conn, "/")
 
+    assert has_element?(view, "select[data-facet='verdict'] option[value='act'][disabled]")
+
     view
-    |> element("[data-lens='breakout']")
-    |> render_click()
+    |> element("form[data-filters]")
+    |> render_change(%{filter: %{verdict: "review"}})
 
     assert has_element?(view, "[data-card-id='batter:judgeaa01:2024']")
-    assert has_element?(view, "[data-card-id='batter:sotoju01:2024']")
-    refute has_element?(view, "[data-card-id='batter:arozara01:2024']")
-    refute has_element?(view, "[data-card-id='batter:troutmi01:2024']")
-    assert has_element?(view, "[data-lens-note]", "13 of 16")
+    refute has_element?(view, "[data-card-id='batter:sotoju01:2024']")
+    assert has_element?(view, "[data-filter-note]", "Showing 9 of 32")
   end
 
-  test "regression-risk lens surfaces the watch list", %{conn: conn} do
+  test "season facet filters to that season only", %{conn: conn} do
     {:ok, view, _html} = live(conn, "/")
 
     view
-    |> element("button[phx-value-role='pitcher']")
-    |> render_click()
+    |> element("form[data-filters]")
+    |> render_change(%{filter: %{position: "all", season: "2021"}})
+
+    assert has_element?(view, "[data-card-id='pitcher:burneco01:2021']")
+    refute has_element?(view, "[data-card-id='batter:judgeaa01:2024']")
+    assert has_element?(view, "[data-filter-note]", "Showing 3 of 32")
+  end
+
+  test "position facet switches the picker", %{conn: conn} do
+    {:ok, view, _html} = live(conn, "/")
+    refute has_element?(view, "[data-card-id='pitcher:skenepa01:2024']")
 
     view
-    |> element("[data-lens='regression_risk']")
-    |> render_click()
+    |> element("form[data-filters]")
+    |> render_change(%{filter: %{position: "pitcher"}})
 
-    assert has_element?(view, "[data-card-id='pitcher:wheelza01:2024']")
-    refute has_element?(view, "[data-card-id='pitcher:skenepa01:2024']")
-    assert has_element?(view, "[data-lens-note]", "4 of 16")
+    assert has_element?(view, "[data-card-id='pitcher:skenepa01:2024']")
+    refute has_element?(view, "[data-card-id='batter:judgeaa01:2024']")
   end
 
   test "underqualified cards get no verdict", %{conn: conn} do
@@ -140,15 +148,13 @@ defmodule SabrJevWeb.WorkbenchLiveTest do
     assert has_element?(view, "[data-verdict='none']", "can never act")
   end
 
-  test "role toggle switches the picker", %{conn: conn} do
-    {:ok, view, _html} = live(conn, "/")
-    refute has_element?(view, "[data-card-id='pitcher:skenepa01:2024']")
-
-    view
-    |> element("button[phx-value-role='pitcher']")
-    |> render_click()
-
-    assert has_element?(view, "[data-card-id='pitcher:skenepa01:2024']")
+  test "single filter element offers position, season and verdict together", %{conn: conn} do
+    {:ok, _view, html} = live(conn, "/")
+    assert html =~ "data-filters"
+    assert html =~ "data-facet=\"position\""
+    assert html =~ "data-facet=\"season\""
+    assert html =~ "data-facet=\"verdict\""
+    refute html =~ "data-lens="
   end
 
   test "footer cites Lahman with no Fangraphs scrape", %{conn: conn} do
