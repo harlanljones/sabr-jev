@@ -103,7 +103,7 @@ form.filters select:disabled { cursor: not-allowed; }
 }
 .role-active { background: #202a27; color: #f5f2e9; }
 ul.card-picker { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
-ul.card-picker button {
+ul.card-picker a.picker-link {
   font-family: system-ui, sans-serif;
   font-size: 0.875rem;
   background: transparent;
@@ -111,8 +111,10 @@ ul.card-picker button {
   border: 1px solid #b0b4a8;
   padding: 0.3rem 0.7rem;
   cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
 }
-ul.card-picker button[aria-pressed="true"] {
+ul.card-picker a.picker-link[aria-pressed="true"] {
   border: 2px solid #202a27;
   padding: calc(0.3rem - 1px) calc(0.7rem - 1px);
 }

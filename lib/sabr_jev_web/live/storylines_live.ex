@@ -122,11 +122,11 @@ defmodule SabrJevWeb.StorylinesLive do
           verdicts are recorded judgments, never guesses.
         </p>
         <div id="storyline-list">
-          <a
+          <.link
             :for={row <- visible_rows(@rows, @filter)}
             class="storyline"
             data-storyline={row.card["id"]}
-            href={~p"/?#{%{card: row.card["id"]}}"}
+            navigate={~p"/?#{%{card: row.card["id"]}}"}
           >
             <span class="season-tag">{row.card["year"]} · {row.team}</span>
             <span>
@@ -137,7 +137,7 @@ defmodule SabrJevWeb.StorylinesLive do
             <span class="verdict {row.route}" data-verdict={row.route}>{verdict_label(
               Atom.to_string(row.route)
             )}</span>
-          </a>
+          </.link>
         </div>
       </section>
 

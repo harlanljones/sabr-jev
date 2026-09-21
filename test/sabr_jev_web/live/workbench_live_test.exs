@@ -1,47 +1,33 @@
 defmodule SabrJevWeb.WorkbenchLiveTest do
   use SabrJevWeb.ConnCase, async: true
 
-  test "loads real cards with latch, full probabilities and a labeled oracle", %{conn: conn} do
-    {:ok, view, _html} = live(conn, "/")
-
+  # Card selection is a real navigation now, so tests open cards by deep link;
+  # one test covers the click-to-navigate behavior itself.
+  defp open_card(conn, id) do
+    {:ok, view, _html} = live(conn, "/?card=#{id}")
     view
-    |> element("[data-card-id='batter:judgeaa01:2024']")
-    |> render_click()
+  end
+
+  test "loads real cards with latch, full probabilities and a labeled oracle", %{conn: conn} do
+    view = open_card(conn, "batter:judgeaa01:2024")
 
     assert has_element?(view, "[data-season-card='batter:judgeaa01:2024']", "Aaron Judge")
     assert has_element?(view, "[data-headline='ops_plus']")
     assert has_element?(view, "[data-latch='review']")
     assert render(view) =~ "provisional thresholds"
     assert has_element?(view, "[data-probabilities='full']", "breakout")
-
-    assert has_element?(
-             view,
-             "[data-oracle='present']",
-             "never sent to Jev"
-           )
+    assert has_element?(view, "[data-oracle='present']", "never sent to Jev")
   end
 
   test "review lane shows full probabilities with no bold single recommendation", %{conn: conn} do
-    {:ok, view, _html} = live(conn, "/")
-
-    view
-    |> element("[data-card-id='batter:judgeaa01:2024']")
-    |> render_click()
+    view = open_card(conn, "batter:judgeaa01:2024")
 
     assert has_element?(view, "[data-probabilities='full']")
     refute has_element?(view, "section.judgment strong")
   end
 
   test "escalated card keeps full probabilities and the oracle pane", %{conn: conn} do
-    {:ok, view, _html} = live(conn, "/")
-
-    view
-    |> element("form[data-filters]")
-    |> render_change(%{filter: %{position: "pitcher"}})
-
-    view
-    |> element("[data-card-id='pitcher:skenepa01:2024']")
-    |> render_click()
+    view = open_card(conn, "pitcher:skenepa01:2024")
 
     assert has_element?(view, "[data-latch='escalate']")
     assert has_element?(view, "[data-probabilities='full']")
@@ -49,11 +35,7 @@ defmodule SabrJevWeb.WorkbenchLiveTest do
   end
 
   test "cards without recordings stay honest and skip Noul explicitly", %{conn: conn} do
-    {:ok, view, _html} = live(conn, "/")
-
-    view
-    |> element("[data-card-id='batter:troutmi01:2024']")
-    |> render_click()
+    view = open_card(conn, "batter:troutmi01:2024")
 
     assert has_element?(view, "[data-no-recording]")
     assert has_element?(view, "[data-noul-skip]", "no T+1 season")
@@ -61,11 +43,7 @@ defmodule SabrJevWeb.WorkbenchLiveTest do
   end
 
   test "recorded 2025 cards latch without a Noul question", %{conn: conn} do
-    {:ok, view, _html} = live(conn, "/")
-
-    view
-    |> element("[data-card-id='batter:sotoju01:2025']")
-    |> render_click()
+    view = open_card(conn, "batter:sotoju01:2025")
 
     assert has_element?(view, "[data-season-card='batter:sotoju01:2025']")
     assert has_element?(view, "[data-latch='review']")
@@ -75,11 +53,7 @@ defmodule SabrJevWeb.WorkbenchLiveTest do
   end
 
   test "verdict framing states the plain-language call", %{conn: conn} do
-    {:ok, view, _html} = live(conn, "/")
-
-    view
-    |> element("[data-card-id='batter:judgeaa01:2024']")
-    |> render_click()
+    view = open_card(conn, "batter:judgeaa01:2024")
 
     assert has_element?(
              view,
@@ -89,11 +63,7 @@ defmodule SabrJevWeb.WorkbenchLiveTest do
   end
 
   test "audit trail shows its work", %{conn: conn} do
-    {:ok, view, _html} = live(conn, "/")
-
-    view
-    |> element("[data-card-id='batter:judgeaa01:2024']")
-    |> render_click()
+    view = open_card(conn, "batter:judgeaa01:2024")
 
     assert has_element?(view, "[data-audit]", "jev-1.13.0")
     assert has_element?(view, "[data-audit]", "sha256:")
@@ -157,12 +127,15 @@ defmodule SabrJevWeb.WorkbenchLiveTest do
     refute has_element?(view, "[data-card-id='batter:judgeaa01:2024']")
   end
 
-  test "underqualified cards get no verdict", %{conn: conn} do
+  test "clicking a card navigates to its shareable URL", %{conn: conn} do
     {:ok, view, _html} = live(conn, "/")
 
-    view
-    |> element("[data-card-id='batter:troutmi01:2024']")
-    |> render_click()
+    assert {:error, {:live_redirect, %{to: "/?card=batter%3Aarozara01%3A2024"}}} =
+             view |> element("[data-card-id='batter:arozara01:2024']") |> render_click()
+  end
+
+  test "underqualified cards get no verdict", %{conn: conn} do
+    view = open_card(conn, "batter:troutmi01:2024")
 
     assert has_element?(view, "[data-verdict='none']", "can never act")
   end
