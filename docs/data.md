@@ -1,5 +1,13 @@
 # Reproducible season data — schema/formula version 1
 
+| Item | Value |
+|---|---|
+| Artifact | `priv/data/cards.json` (`schema_version: 1`, 12 cards, byte-identical rebuilds) |
+| Inputs | 4 Lahman tables (128598 / 57630 / 3614 / 24270 rows) + 155-season frozen wOBA weights |
+| Latest season | 2025 · scope AL/NL · formula `sabr-jev-v1` |
+| Recordings | 10 immutable (`priv/jev/recordings/`): 6 with retrospective oracle Noul, 4 qualified 2025 Choice/Score-only |
+| License | Lahman CC-BY-SA-3.0 (SABR/Sean Lahman); weights are third-party constants, not project-owned |
+
 ## Commands (Python standard library only)
 
 Run from the repository root with Python 3.10+ and Make:

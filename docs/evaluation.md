@@ -2,6 +2,15 @@
 
 Status: infrastructure only. Prospective accuracy is pending, not claimed.
 
+| Item | Value |
+|---|---|
+| Enrollable cohort | 2026 → 2027 (derived from frozen pins, not hand-set) |
+| Cutoff | 2027-01-01T00:00:00Z (Jan 1 of outcome season, stricter than opening day) |
+| Recordings eligible today | 0 (all 10 recordings are 2024/2025; capture refuses them as historical) |
+| Report status string | `"prospective, accuracy pending"` |
+| Ledger guarantee | append-only, hash-chained — **cannot prove external capture time** |
+| Historical 2024 → 2025 joins | retrospective plumbing only, never validation |
+
 ## Cohort and cutoff
 
 Cohort and baseline freeze in `SabrJev.Prospective.enroll/2` before any

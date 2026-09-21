@@ -1,62 +1,106 @@
 # Sabr-Jev — confidence-gated season-card workbench
 
-Batter|Pitcher season cards from free public stats (Lahman-primary), rendered
-as precomputed JSON state, gated by TypeSafe Jev Choice/Score/Noul with a
-**confidence latch**. The product is the latch — without it the demo is a
-stat table.
+[![Elixir](https://img.shields.io/badge/elixir-%3A~%3E1.20-purple)](https://elixir-lang.org)
+[![Phoenix LiveView](https://img.shields.io/badge/phoenix-liveview-orange)](https://www.phoenixframework.org)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![No live scrape](https://img.shields.io/badge/scrape-none-lightgrey)](#non-negotiables)
+
+Batter|Pitcher season cards from free public stats, gated by typed TypeSafe Jev
+judgments through a **confidence latch**. The latch is the product — without
+it this is a stat table.
+
+## Results
+
+Twelve real cards from pinned Lahman inputs; ten immutable Jev recordings;
+every latch route computed from frozen artifacts, never invented.
+
+| Card | Sample | Oracle (T+1) | Recording | Latch |
+|---|---|---|---|---|
+| Randy Arozarena 2024 | 648 PA ✓ | present | 4 answers | **escalate** |
+| Aaron Judge 2024 | qualified ✓ | present | 4 answers | **review** |
+| Aaron Judge 2025 | qualified ✓ | none | 3 answers (no Noul) | **review** |
+| Juan Soto 2024 | qualified ✓ | present | 4 answers | **escalate** |
+| Juan Soto 2025 | qualified ✓ | none | 3 answers (no Noul) | **escalate** |
+| Mike Trout 2024 | 126 PA ✗ | none | none — honest empty state | — |
+| Jacob deGrom 2024 | 10.7 IP ✗ | none | none — honest empty state | — |
+| Paul Skenes 2024 | qualified ✓ | present | 4 answers | **escalate** |
+| Paul Skenes 2025 | qualified ✓ | none | 3 answers (no Noul) | **escalate** |
+| Gregory Soto 2024 | qualified ✓ | present | 4 answers | **escalate** |
+| Zack Wheeler 2024 | qualified ✓ | present | 4 answers | **escalate** |
+| Zack Wheeler 2025 | qualified ✓ | none | 3 answers (no Noul) | **escalate** |
+
+Route totals: 8 escalate · 2 review · 0 act · 2 unrecorded (underqualified demos).
+
+| Check | Result |
+|---|---|
+| Offline Elixir suite (`mix test`, no API key) | 87 passed |
+| Python ETL + metric suite | 23 passed |
+| `mix format --check-formatted`, `mix compile --warnings-as-errors` | clean |
+| ETL rebuild of `priv/data/cards.json` | byte-identical |
+| Live `/` + `/about` | 200, content-checked |
+| Prospective accuracy | **pending by design** — infrastructure only, first enrollable cohort 2026→2027 |
+| Latch thresholds | **provisional** (N=10, mini-labeled minimum N≥30) |
+
+## Use cases
+
+| Who | Flow |
+|---|---|
+| Fan / analyst | Pick Batter\|Pitcher → player-season → read the card; the latch banner tells you whether the Jev read is actable, worth review, or escalated — with full probabilities, never a single bold claim under review |
+| Developer | `SabrJev.Catalog` is the trusted boundary: exact keys, `id == role:player_id:year`, outer metrics == judgment-state metrics, PA/IP == sample value — mutations rejected before any Jev use |
+| Researcher | Prospective pair (`mix sabr.capture` / `mix sabr.evaluate`) freezes predictions before the outcome season under a Jan-1 cutoff; Brier by role, baselines, reliability buckets, pending-not-negative outcomes |
+
+## Design
+
+```mermaid
+flowchart LR
+    Lahman[(Lahman CSVs\npinned + checksummed)] --> ETL[Makefile ETL\nsum counts, then rates]
+    WOBA[data/woba_weights.csv\nfrozen constants] --> ETL
+    ETL --> Cards[priv/data/cards.json\n12 cards + provenance]
+    Cards --> Catalog[SabrJev.Catalog\ntrusted boundary]
+    Rec[priv/jev/recordings/\n10 immutable judgments] --> Judg[SabrJev.Judgments\nvalidate only]
+    Catalog --> Judg
+    Judg --> Latch[SabrJev.Latch\nact / review / escalate]
+    Catalog --> UI[WorkbenchLive / + AboutLive]
+    Latch --> UI
+```
+
+```mermaid
+flowchart TD
+    A[Validated answers] --> B{Answer type}
+    B -->|Choice / Score| C{confidence}
+    C -->|≥ 0.8| ACT[act]
+    C -->|≥ 0.5| REV[review]
+    C -->|else, or 'other'| ESC[escalate]
+    B -->|Noul: max p, 1-p| D{confidence}
+    D -->|≥ 0.85| ACT
+    D -->|else| REV
+    E[Sample gate in code] -->|underqualified| REV
+    style ACT fill:#dde5d3
+    style REV fill:#efe6c8
+    style ESC fill:#e8cfc8
+```
+
+Headlines are Lahman-feasible only: batter **OPS+ (Sabr-Jev)** + wOBA with ISO/BB%/K%/BABIP/PA shape; pitcher **FIP** + ERA + **K-BB%** with IP/HR-BB-K-per-9 shape. Jev receives precomputed numbers and never computes. Formulas, provenance, and counting rules: [`docs/data.md`](docs/data.md). Prospective protocol: [`docs/evaluation.md`](docs/evaluation.md). Input pins: [`docs/data-sources.md`](docs/data-sources.md).
 
 ## Quick start
 
 ```sh
 mix deps.get
-mix test               # offline; recorded Jev fixtures, no TYPESAFE_API_KEY needed
-mix format --check-formatted
-mix phx.server         # workbench at http://localhost:4000, formulas at /about
+mix test               # offline; recorded fixtures, no key needed
+mix phx.server         # workbench :4000, formulas /about
+make fetch data test-data   # ETL: pinned fetch, offline rebuild, offline tests
+mix sabr.record --card batter:judgeaa01:2024   # live Jev (needs key)
 ```
-
-Python ETL (standard library only):
-
-```sh
-make fetch             # pinned HTTPS inputs, first use only
-make data              # offline rebuild into priv/data/cards.json
-make test-data         # offline ETL + metric tests, no network
-```
-
-## How it fits together
-
-- `scripts/` + `Makefile` → `priv/data/cards.json`: Lahman counts summed
-  across stints before dividing; league context is league-year; frozen
-  `data/woba_weights.csv` supplies wOBA weights (missing year → unavailable).
-  Full contract in `docs/data.md`.
-- `SabrJev.Catalog`: trusted card boundary. Every card served to judgments or
-  the latch has exact outer keys, `id == role:player_id:year`, outer metrics
-  equal to judgment-state metrics, and batter PA / pitcher IP equal to the
-  sample value. Mutations are rejected before any Jev use.
-- `SabrJev.Questions` / `SabrJev.Judgments`: frozen Choice/Score/Noul pack on
-  precomputed state JSON only. Recordings in `priv/jev/recordings/` are
-  immutable; `mix sabr.record` writes them (needs `TYPESAFE_API_KEY` or the
-  local Jev key). Ten recordings ship: six 2024 cards with retrospective
-  oracle Nouls plus the four qualified 2025 cards (Choice/Score only, no T+1).
-- `SabrJev.Latch`: Choice/Score → act/review/escalate; Noul → act/review
-  only (floor 0.5, escalate unreachable on Noul alone). Thresholds are
-  provisional; insufficient sample cannot act.
-- `SabrJevWeb.WorkbenchLive` (`/`) + `AboutLive` (`/about`): role toggle,
-  player-season picker, headlines + shape, latch with full probabilities in
-  review/escalate (no bold single recommendation there), clearly labeled
-  retrospective oracle pane, evaluation status. No default dashboard styling:
-  restrained scorebook/workbench with prominent confidence gating.
-- `SabrJev.Prospective` / `SabrJev.Evaluation` (`mix sabr.capture`,
-  `mix sabr.evaluate`): prospective enrollment with a conservative January 1
-  cutoff and a local append-only hash-chained ledger that **cannot prove
-  external capture time**. Status: infrastructure only, accuracy pending.
-  Details in `docs/evaluation.md`.
 
 ## Non-negotiables
 
-- No live Fangraphs/BBRef scrape. Lahman + committed `data/woba_weights.csv`.
-- Jev never computes numbers; it receives precomputed state JSON only.
-- **OPS+ (Sabr-Jev)** label everywhere, formula + Teams.BPF published.
+- No live Fangraphs/BBRef scrape — Lahman + committed weights file only.
+- Jev never computes numbers; precomputed state JSON in, typed answers out.
+- **OPS+ (Sabr-Jev)** label everywhere; no vendor-parity claim.
 - No deterministic Noul; minimums (200 PA / 50 IP) live in code.
 - No T+1 leakage: oracle joins are eval-only, never judgment state.
-- Footer cites Lahman and says “no Fangraphs scrape in v1”. No Retrosheet
-  data in v1. Count Gate stays parked; not Skipper.
+- Footer cites Lahman, “no Fangraphs scrape in v1”. No Retrosheet data in v1. Count Gate parked; not Skipper.
+
+## License
+
+Code: [MIT](LICENSE). Data: Lahman database, SABR via Sean Lahman, [CC-BY-SA-3.0](https://creativecommons.org/licenses/by-sa/3.0/) — attribution and share-alike apply to derived data. wOBA weights are third-party frozen constants, not project-owned; see [`docs/data-sources.md`](docs/data-sources.md).
