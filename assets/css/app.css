@@ -23,25 +23,34 @@ footer { margin-top: 4rem; border-top: 1px solid #b0b4a8; padding-top: 1rem; }
 a { color: inherit; text-underline-offset: 0.2em; }
 nav { font-family: system-ui, sans-serif; font-size: 0.875rem; margin-top: 1rem; }
 
-/* Role toggle + lens picker: scorebook tabs, not dashboard chrome. */
-[role="group"][aria-label="Role"], [role="group"][aria-label="Lens"] {
+/* Single faceted filter: position × season × verdict, with counts. */
+form.filters {
   display: flex;
-  gap: 0;
-  margin-bottom: 1rem;
   flex-wrap: wrap;
+  gap: 1rem 2rem;
+  margin: 1.5rem 0 0.5rem;
 }
-[role="group"][aria-label="Role"] button, [role="group"][aria-label="Lens"] button {
+form.filters label {
   font-family: system-ui, sans-serif;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  display: grid;
+  gap: 0.3rem;
+}
+form.filters select {
+  font-family: system-ui, sans-serif;
+  font-size: 0.9rem;
+  text-transform: none;
+  letter-spacing: normal;
   background: transparent;
   color: inherit;
   border: 1px solid #626b60;
-  padding: 0.4rem 1.2rem;
+  padding: 0.4rem 0.6rem;
   cursor: pointer;
+  font-variant-numeric: tabular-nums;
 }
-[role="group"][aria-label="Role"] button + button,
-[role="group"][aria-label="Lens"] button + button { border-left: none; }
-[role="group"][aria-label="Lens"] { margin-top: 1.5rem; }
+form.filters select:disabled { cursor: not-allowed; }
 .lens-note { font-size: 0.9rem; font-style: italic; }
 
 /* Storyline index: ruled ledger rows, verdict chip at the rail. */

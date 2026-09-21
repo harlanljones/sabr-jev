@@ -3,31 +3,29 @@ defmodule SabrJevWeb.WorkbenchLive do
 
   alias SabrJev.Catalog
 
-  @lenses ["all", "breakout", "regression_risk"]
+  @positions ["batter", "pitcher"]
+  @verdicts ["act", "review", "escalate"]
+  @empty_filter %{"position" => "all", "season" => "all", "verdict" => "all"}
 
   @impl true
   def mount(_params, _session, socket) do
     case Catalog.load() do
       {:ok, catalog} ->
-        role = "batter"
-
         {:ok,
          socket
          |> assign(:catalog, catalog)
          |> assign(:load_error, nil)
-         |> assign(:role, role)
-         |> assign(:lens, "all")
-         |> assign(:read_map, read_map(catalog))
-         |> assign_card(default_card_id(catalog, role))}
+         |> assign(:filter, Map.put(@empty_filter, "position", "batter"))
+         |> assign(:route_map, route_map(catalog))
+         |> assign_card(default_card_id(catalog, "batter"))}
 
       {:error, reason} ->
         {:ok,
          socket
          |> assign(:catalog, nil)
          |> assign(:load_error, inspect(reason))
-         |> assign(:role, "batter")
-         |> assign(:lens, "all")
-         |> assign(:read_map, %{})
+         |> assign(:filter, @empty_filter)
+         |> assign(:route_map, %{})
          |> assign(:card, nil)
          |> assign(:judgment, nil)
          |> assign(:judgment_error, nil)}
@@ -38,40 +36,42 @@ defmodule SabrJevWeb.WorkbenchLive do
   def handle_params(%{"card" => id}, _uri, socket) do
     {:noreply,
      case socket.assigns.catalog && Catalog.get(socket.assigns.catalog, id) do
-       {:ok, card} -> socket |> assign(:role, card["role"]) |> assign_card(id)
-       _ -> socket
+       {:ok, card} ->
+         socket
+         |> assign(:filter, Map.put(@empty_filter, "position", card["role"]))
+         |> assign_card(id)
+
+       _ ->
+         socket
      end}
   end
 
   def handle_params(_params, _uri, socket), do: {:noreply, socket}
 
   @impl true
-  def handle_event("select-role", %{"role" => role}, socket) when role in ["batter", "pitcher"] do
-    {:noreply,
-     socket
-     |> assign(:role, role)
-     |> assign_card(first_visible_id(socket.assigns, role, socket.assigns.lens))}
-  end
+  def handle_event("filter", %{"filter" => params}, socket) when is_map(params) do
+    filter =
+      @empty_filter
+      |> Map.merge(Map.take(socket.assigns.filter, Map.keys(@empty_filter)))
+      |> Map.merge(sanitize_filter(params, socket.assigns.catalog))
+      |> coerce_empties(socket.assigns.catalog, socket.assigns.route_map)
 
-  def handle_event("select-lens", %{"lens" => lens}, socket) when lens in @lenses do
-    socket = assign(socket, :lens, lens)
+    socket = assign(socket, :filter, filter)
     current = socket.assigns.card && socket.assigns.card["id"]
-    visible = visible_ids(socket.assigns)
+    visible = Enum.map(filter_cards(socket.assigns), & &1["id"])
 
-    next =
-      if Enum.member?(visible, current) do
-        socket
-      else
-        assign_card(socket, List.first(visible))
-      end
-
-    {:noreply, next}
+    {:noreply,
+     if Enum.member?(visible, current) do
+       socket
+     else
+       assign_card(socket, List.first(visible))
+     end}
   end
 
   def handle_event("select-card", %{"id" => id}, socket) do
     case socket.assigns.catalog && Catalog.get(socket.assigns.catalog, id) do
       {:ok, card} ->
-        {:noreply, socket |> assign(:role, card["role"]) |> assign_card(id)}
+        {:noreply, assign_card(socket, card["id"])}
 
       _ ->
         {:noreply, socket}
@@ -112,29 +112,74 @@ defmodule SabrJevWeb.WorkbenchLive do
       </section>
 
       <section :if={!@load_error && @catalog} aria-label="Card selection">
-        <div role="group" aria-label="Role">
-          <button
-            type="button"
-            phx-click="select-role"
-            phx-value-role="batter"
-            aria-pressed={@role == "batter"}
-            class={if(@role == "batter", do: "role-active", else: "role-idle")}
-          >
-            Batter
-          </button>
-          <button
-            type="button"
-            phx-click="select-role"
-            phx-value-role="pitcher"
-            aria-pressed={@role == "pitcher"}
-            class={if(@role == "pitcher", do: "role-active", else: "role-idle")}
-          >
-            Pitcher
-          </button>
-        </div>
-
+        <form phx-change="filter" class="filters" data-filters="true" aria-label="Filter cards">
+          <label>
+            Position
+            <select name="filter[position]" data-facet="position">
+              <option value="all" selected={@filter["position"] == "all"}>
+                All ({filter_count(@catalog, @route_map, @filter, :position, "all")})
+              </option>
+              <option
+                :for={position <- position_options()}
+                value={position}
+                selected={@filter["position"] == position}
+                disabled={filter_count(@catalog, @route_map, @filter, :position, position) == 0}
+              >
+                {String.capitalize(position)} ({filter_count(
+                  @catalog,
+                  @route_map,
+                  @filter,
+                  :position,
+                  position
+                )})
+              </option>
+            </select>
+          </label>
+          <label>
+            Season
+            <select name="filter[season]" data-facet="season">
+              <option value="all" selected={@filter["season"] == "all"}>
+                All ({filter_count(@catalog, @route_map, @filter, :season, "all")})
+              </option>
+              <option
+                :for={season <- season_options(@catalog)}
+                value={season}
+                selected={@filter["season"] == season}
+                disabled={filter_count(@catalog, @route_map, @filter, :season, season) == 0}
+              >
+                {season} ({filter_count(@catalog, @route_map, @filter, :season, season)})
+              </option>
+            </select>
+          </label>
+          <label>
+            Verdict
+            <select name="filter[verdict]" data-facet="verdict">
+              <option value="all" selected={@filter["verdict"] == "all"}>
+                All ({filter_count(@catalog, @route_map, @filter, :verdict, "all")})
+              </option>
+              <option
+                :for={verdict <- verdict_options()}
+                value={verdict}
+                selected={@filter["verdict"] == verdict}
+                disabled={filter_count(@catalog, @route_map, @filter, :verdict, verdict) == 0}
+              >
+                {verdict_label(verdict)} ({filter_count(
+                  @catalog,
+                  @route_map,
+                  @filter,
+                  :verdict,
+                  verdict
+                )})
+              </option>
+            </select>
+          </label>
+        </form>
+        <p class="lens-note" data-filter-note="true">
+          Showing {length(filter_cards(assigns))} of {length(Catalog.cards(@catalog))} —
+          empty combinations are not offered.
+        </p>
         <ul aria-label="Player seasons" class="card-picker">
-          <li :for={card <- visible_cards(@catalog, @role, @lens, @read_map)}>
+          <li :for={card <- filter_cards(assigns)}>
             <button
               type="button"
               phx-click="select-card"
@@ -146,24 +191,6 @@ defmodule SabrJevWeb.WorkbenchLive do
             </button>
           </li>
         </ul>
-        <div role="group" aria-label="Lens">
-          <button
-            :for={lens <- lens_options()}
-            type="button"
-            phx-click="select-lens"
-            phx-value-lens={lens}
-            data-lens={lens}
-            aria-pressed={@lens == lens}
-            class={if(@lens == lens, do: "role-active", else: "role-idle")}
-          >
-            {lens_label(lens)}
-          </button>
-        </div>
-        <p :if={@lens != "all"} class="lens-note" data-lens-note="true">
-          {lens_label(@lens)}: showing {length(visible_cards(@catalog, @role, @lens, @read_map))} of {length(
-            Catalog.for_role(@catalog, @role)
-          )} — cards without a recorded {lens_label(@lens)} read are excluded, never guessed.
-        </p>
       </section>
 
       <section
@@ -221,52 +248,101 @@ defmodule SabrJevWeb.WorkbenchLive do
     end
   end
 
-  # Precomputed season_read per recorded card; unrecorded cards map to nil and
-  # are excluded from filtered lenses rather than guessed about.
-  defp read_map(nil), do: %{}
+  defp position_options, do: @positions
+  defp verdict_options, do: @verdicts
 
-  defp read_map(catalog) do
+  # Precomputed latch route per recorded card; unrecorded cards map to nil and
+  # never match a specific verdict facet.
+  defp route_map(nil), do: %{}
+
+  defp route_map(catalog) do
     Map.new(Catalog.cards(catalog), fn card ->
-      read =
+      route =
         case Catalog.judgment(card) do
-          {:ok, %{record: %{"answers" => %{"season_read" => %{"choice" => choice}}}}} ->
-            choice
-
-          _ ->
-            nil
+          {:ok, %{decision: %{route: route}}} -> Atom.to_string(route)
+          _ -> nil
         end
 
-      {card["id"], read}
+      {card["id"], route}
     end)
   end
 
-  defp visible_cards(nil, _role, _lens, _read_map), do: []
-
-  defp visible_cards(catalog, role, "all", _read_map), do: Catalog.for_role(catalog, role)
-
-  defp visible_cards(catalog, role, lens, read_map) do
-    Enum.filter(Catalog.for_role(catalog, role), &(read_map[&1["id"]] == lens))
+  defp season_options(catalog) do
+    catalog |> Catalog.cards() |> Enum.map(&to_string(&1["year"])) |> Enum.uniq() |> Enum.sort()
   end
 
-  defp visible_ids(assigns) do
-    Enum.map(
-      visible_cards(assigns.catalog, assigns.role, assigns.lens, assigns.read_map),
-      & &1["id"]
-    )
+  defp filter_cards(%{catalog: nil}), do: []
+
+  defp filter_cards(%{catalog: catalog, filter: filter, route_map: route_map}) do
+    Enum.filter(Catalog.cards(catalog), fn card ->
+      (filter["position"] == "all" or card["role"] == filter["position"]) and
+        (filter["season"] == "all" or to_string(card["year"]) == filter["season"]) and
+        (filter["verdict"] == "all" or route_map[card["id"]] == filter["verdict"])
+    end)
   end
 
-  defp first_visible_id(assigns, role, lens) do
-    case visible_cards(assigns.catalog, role, lens, assigns.read_map) do
-      [first | _] -> first["id"]
-      [] -> nil
+  # Facet counts ignore the facet being counted so every offered option is
+  # non-empty by construction; zeros render disabled.
+  defp filter_count(catalog, route_map, filter, facet, value) do
+    others = Map.delete(filter, Atom.to_string(facet))
+
+    Enum.count(Catalog.cards(catalog), fn card ->
+      Enum.all?(others, fn
+        {"position", "all"} -> true
+        {"position", position} -> card["role"] == position
+        {"season", "all"} -> true
+        {"season", season} -> to_string(card["year"]) == season
+        {"verdict", "all"} -> true
+        {"verdict", verdict} -> route_map[card["id"]] == verdict
+      end) and facet_match?(facet, value, card, route_map)
+    end)
+  end
+
+  defp facet_match?(_facet, "all", _card, _route_map), do: true
+  defp facet_match?(:position, position, card, _), do: card["role"] == position
+  defp facet_match?(:season, season, card, _), do: to_string(card["year"]) == season
+  defp facet_match?(:verdict, verdict, card, route_map), do: route_map[card["id"]] == verdict
+
+  defp sanitize_filter(params, nil), do: Map.take(params, ["position", "season", "verdict"])
+
+  defp sanitize_filter(params, catalog) do
+    seasons = season_options(catalog)
+
+    %{}
+    |> put_valid(params, "position", ["all" | @positions])
+    |> put_valid(params, "season", ["all" | seasons])
+    |> put_valid(params, "verdict", ["all" | @verdicts])
+  end
+
+  defp put_valid(acc, params, key, allowed) do
+    case Map.fetch(params, key) do
+      {:ok, value} when is_binary(value) ->
+        if value in allowed, do: Map.put(acc, key, value), else: acc
+
+      _ ->
+        acc
     end
   end
 
-  defp lens_label("all"), do: "All seasons"
-  defp lens_label("breakout"), do: "Breakout check"
-  defp lens_label("regression_risk"), do: "Regression-risk watch"
+  # A selected value left empty by the other facets falls back to "all" so the
+  # picker can never strand on an empty combination.
+  defp coerce_empties(filter, nil, _route_map), do: filter
 
-  defp lens_options, do: @lenses
+  defp coerce_empties(filter, catalog, route_map) do
+    Map.new(filter, fn {key, value} ->
+      facet = String.to_existing_atom(key)
+
+      if value != "all" and filter_count(catalog, route_map, filter, facet, value) == 0 do
+        {key, "all"}
+      else
+        {key, value}
+      end
+    end)
+  end
+
+  defp verdict_label("escalate"), do: "Set aside"
+  defp verdict_label("all"), do: "All verdicts"
+  defp verdict_label(verdict), do: String.capitalize(verdict)
 
   defp assign_card(socket, nil) do
     socket
