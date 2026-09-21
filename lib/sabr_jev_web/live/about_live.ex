@@ -24,6 +24,10 @@ defmodule SabrJevWeb.AboutLive do
         <nav aria-label="About">
           <a href={~p"/"}>Workbench</a>
           {" | "}
+          <a href={~p"/storylines"}>Storylines</a>
+          {" | "}
+          <a href={~p"/backtest"}>Backtest</a>
+          {" | "}
           <a href={~p"/about"} aria-current="page">About &amp; formulas</a>
         </nav>
       </header>

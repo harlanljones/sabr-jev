@@ -13,7 +13,7 @@ defmodule SabrJevWeb.StorylinesLiveTest do
              "Which number was lying"
            )
 
-    assert view |> render() |> then(fn h -> length(Regex.scan(~r/data-storyline=/, h)) end) == 24
+    assert view |> render() |> then(fn h -> length(Regex.scan(~r/data-storyline=/, h)) end) == 37
   end
 
   test "position facet narrows the index with counts", %{conn: conn} do
@@ -25,7 +25,7 @@ defmodule SabrJevWeb.StorylinesLiveTest do
 
     assert has_element?(view, "[data-storyline='pitcher:snellbl01:2023']")
     refute has_element?(view, "[data-storyline='batter:acunaro01:2023']")
-    assert has_element?(view, "[data-filter-note]", "Showing 11 of 24")
+    assert has_element?(view, "[data-filter-note]", "Showing 18 of 37")
   end
 
   test "season and verdict facets combine with no dead ends", %{conn: conn} do
@@ -36,7 +36,7 @@ defmodule SabrJevWeb.StorylinesLiveTest do
     |> render_change(%{filter: %{verdict: "act"}})
 
     assert has_element?(view, "[data-storyline='batter:judgeaa01:2022']")
-    assert has_element?(view, "[data-filter-note]", "Showing 4 of 24")
+    assert has_element?(view, "[data-filter-note]", "Showing 23 of 37")
 
     view
     |> element("form[data-filters]")
@@ -44,7 +44,7 @@ defmodule SabrJevWeb.StorylinesLiveTest do
 
     assert has_element?(view, "[data-storyline='batter:acunaro01:2023']")
     refute has_element?(view, "[data-storyline='batter:judgeaa01:2022']")
-    assert has_element?(view, "[data-filter-note]", "Showing 7 of 24")
+    assert has_element?(view, "[data-filter-note]", "Showing 13 of 37")
   end
 
   test "storyline links navigate to the card in the workbench", %{conn: conn} do

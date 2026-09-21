@@ -15,6 +15,7 @@ defmodule SabrJevWeb.Router do
 
     live "/", WorkbenchLive
     live "/storylines", StorylinesLive
+    live "/backtest", BacktestLive
     live "/about", AboutLive
   end
 end
