@@ -53,6 +53,24 @@ defmodule SabrJevWeb.WorkbenchLiveTest do
     refute has_element?(view, "[data-no-recording]")
   end
 
+  test "oracle comparison table formats by context", %{conn: conn} do
+    view = open_card(conn, "batter:acunaro01:2023")
+
+    assert has_element?(view, "[data-oracle-compare='batter']", "OPS+ (Sabr-Jev)")
+    assert has_element?(view, "[data-oracle-compare='batter']", "dropped")
+    assert has_element?(view, "[data-oracle-compare='batter']", "target hit")
+
+    pitcher_view = open_card(conn, "pitcher:snellbl01:2023")
+
+    assert has_element?(pitcher_view, "[data-oracle-compare='pitcher']", "FIP")
+    assert has_element?(pitcher_view, "[data-oracle-compare='pitcher']", "fell")
+  end
+
+  test "outside the oracle pane this stays audit-only", %{conn: conn} do
+    view = open_card(conn, "batter:acunaro01:2023")
+    refute render(view) =~ "2024 whisper"
+  end
+
   test "verdict framing states the plain-language call", %{conn: conn} do
     view = open_card(conn, "batter:judgeaa01:2024")
     assert has_element?(view, "[data-verdict='act']", "act on this read")
