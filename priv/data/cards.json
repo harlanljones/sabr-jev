@@ -59,6 +59,64 @@
       "year": 2023
     },
     {
+      "id": "batter:alvaryo01:2022",
+      "judgment_state": {
+        "metrics": {
+          "babip": 0.3203592814371258,
+          "bb_pct": 0.13903743315508021,
+          "iso": 0.30638297872340425,
+          "k_pct": 0.1889483065953654,
+          "league_obp": 0.3093511682062488,
+          "league_slg": 0.39180600371565466,
+          "obp": 0.40641711229946526,
+          "ops": 1.0191830697462738,
+          "ops_plus": 186.34080812330885,
+          "pa": 561,
+          "park_adjustment": 1.005,
+          "slg": 0.6127659574468085,
+          "woba": 0.42659420289855066
+        },
+        "role": "batter",
+        "sample": {
+          "minimum": 200,
+          "value": 561
+        }
+      },
+      "metrics": {
+        "babip": 0.3203592814371258,
+        "bb_pct": 0.13903743315508021,
+        "iso": 0.30638297872340425,
+        "k_pct": 0.1889483065953654,
+        "league_obp": 0.3093511682062488,
+        "league_slg": 0.39180600371565466,
+        "obp": 0.40641711229946526,
+        "ops": 1.0191830697462738,
+        "ops_plus": 186.34080812330885,
+        "pa": 561,
+        "park_adjustment": 1.005,
+        "slg": 0.6127659574468085,
+        "woba": 0.42659420289855066
+      },
+      "oracle": {
+        "label": true,
+        "metric": "ops_plus",
+        "target": "ops_plus_drop_ge_10_next",
+        "value": 170.02175556053825,
+        "year": 2023
+      },
+      "player_id": "alvaryo01",
+      "player_name": "Yordan Alvarez",
+      "role": "batter",
+      "sample": {
+        "minimum": 200,
+        "qualified": true,
+        "unit": "PA",
+        "value": 561
+      },
+      "warnings": [],
+      "year": 2022
+    },
+    {
       "id": "batter:arozara01:2024",
       "judgment_state": {
         "metrics": {
@@ -289,6 +347,122 @@
       },
       "warnings": [],
       "year": 2023
+    },
+    {
+      "id": "batter:goldspa01:2022",
+      "judgment_state": {
+        "metrics": {
+          "babip": 0.3676092544987147,
+          "bb_pct": 0.12172573189522343,
+          "iso": 0.26024955436720143,
+          "k_pct": 0.2172573189522342,
+          "league_obp": 0.31374273183921564,
+          "league_slg": 0.39792281595610474,
+          "obp": 0.4036979969183359,
+          "ops": 0.9812381038702076,
+          "ops_plus": 182.27875398807635,
+          "pa": 649,
+          "park_adjustment": 0.97,
+          "slg": 0.5775401069518716,
+          "woba": 0.41933796296296294
+        },
+        "role": "batter",
+        "sample": {
+          "minimum": 200,
+          "value": 649
+        }
+      },
+      "metrics": {
+        "babip": 0.3676092544987147,
+        "bb_pct": 0.12172573189522343,
+        "iso": 0.26024955436720143,
+        "k_pct": 0.2172573189522342,
+        "league_obp": 0.31374273183921564,
+        "league_slg": 0.39792281595610474,
+        "obp": 0.4036979969183359,
+        "ops": 0.9812381038702076,
+        "ops_plus": 182.27875398807635,
+        "pa": 649,
+        "park_adjustment": 0.97,
+        "slg": 0.5775401069518716,
+        "woba": 0.41933796296296294
+      },
+      "oracle": {
+        "label": true,
+        "metric": "ops_plus",
+        "target": "ops_plus_drop_ge_10_next",
+        "value": 120.68211940793496,
+        "year": 2023
+      },
+      "player_id": "goldspa01",
+      "player_name": "Paul Goldschmidt",
+      "role": "batter",
+      "sample": {
+        "minimum": 200,
+        "qualified": true,
+        "unit": "PA",
+        "value": 649
+      },
+      "warnings": [],
+      "year": 2022
+    },
+    {
+      "id": "batter:guerrvl02:2021",
+      "judgment_state": {
+        "metrics": {
+          "babip": 0.3125,
+          "bb_pct": 0.12320916905444126,
+          "iso": 0.2897350993377483,
+          "k_pct": 0.15759312320916904,
+          "league_obp": 0.3159370377729209,
+          "league_slg": 0.41468212498616863,
+          "obp": 0.40114613180515757,
+          "ops": 1.0021395092886012,
+          "ops_plus": 169.20689940780997,
+          "pa": 698,
+          "park_adjustment": 1.01,
+          "slg": 0.6009933774834437,
+          "woba": 0.41912011577424024
+        },
+        "role": "batter",
+        "sample": {
+          "minimum": 200,
+          "value": 698
+        }
+      },
+      "metrics": {
+        "babip": 0.3125,
+        "bb_pct": 0.12320916905444126,
+        "iso": 0.2897350993377483,
+        "k_pct": 0.15759312320916904,
+        "league_obp": 0.3159370377729209,
+        "league_slg": 0.41468212498616863,
+        "obp": 0.40114613180515757,
+        "ops": 1.0021395092886012,
+        "ops_plus": 169.20689940780997,
+        "pa": 698,
+        "park_adjustment": 1.01,
+        "slg": 0.6009933774834437,
+        "woba": 0.41912011577424024
+      },
+      "oracle": {
+        "label": true,
+        "metric": "ops_plus",
+        "target": "ops_plus_drop_ge_10_next",
+        "value": 131.84486753820462,
+        "year": 2022
+      },
+      "player_id": "guerrvl02",
+      "player_name": "Vladimir Guerrero",
+      "role": "batter",
+      "sample": {
+        "minimum": 200,
+        "qualified": true,
+        "unit": "PA",
+        "value": 698
+      },
+      "warnings": [],
+      "year": 2021
     },
     {
       "id": "batter:hendegu01:2024",
@@ -961,6 +1135,54 @@
       "year": 2022
     },
     {
+      "id": "pitcher:biebesh01:2020",
+      "judgment_state": {
+        "metrics": {
+          "bb_per_9": 2.4439655172413794,
+          "era": 1.6293103448275863,
+          "fip": 2.040823978061531,
+          "hr_per_9": 0.8146551724137931,
+          "ip": 77.33333333333333,
+          "k_bb_pct": 0.3400673400673401,
+          "k_per_9": 14.198275862068966,
+          "league_cfip": 3.165823978061531
+        },
+        "role": "pitcher",
+        "sample": {
+          "minimum": 50,
+          "value": 77.33333333333333
+        }
+      },
+      "metrics": {
+        "bb_per_9": 2.4439655172413794,
+        "era": 1.6293103448275863,
+        "fip": 2.040823978061531,
+        "hr_per_9": 0.8146551724137931,
+        "ip": 77.33333333333333,
+        "k_bb_pct": 0.3400673400673401,
+        "k_per_9": 14.198275862068966,
+        "league_cfip": 3.165823978061531
+      },
+      "oracle": {
+        "label": true,
+        "metric": "fip",
+        "target": "fip_rise_ge_0_50_next",
+        "value": 3.067216505724155,
+        "year": 2021
+      },
+      "player_id": "biebesh01",
+      "player_name": "Shane Bieber",
+      "role": "pitcher",
+      "sample": {
+        "minimum": 50,
+        "qualified": true,
+        "unit": "IP",
+        "value": 77.33333333333333
+      },
+      "warnings": [],
+      "year": 2020
+    },
+    {
       "id": "pitcher:burneco01:2021",
       "judgment_state": {
         "metrics": {
@@ -1567,6 +1789,54 @@
       },
       "warnings": [],
       "year": 2023
+    },
+    {
+      "id": "pitcher:verlaju01:2022",
+      "judgment_state": {
+        "metrics": {
+          "bb_per_9": 1.4914285714285713,
+          "era": 1.7485714285714287,
+          "fip": 2.4283983460413667,
+          "hr_per_9": 0.6171428571428571,
+          "ip": 175.0,
+          "k_bb_pct": 0.23423423423423423,
+          "k_per_9": 9.514285714285714,
+          "league_cfip": 3.0512554888985095
+        },
+        "role": "pitcher",
+        "sample": {
+          "minimum": 50,
+          "value": 175.0
+        }
+      },
+      "metrics": {
+        "bb_per_9": 1.4914285714285713,
+        "era": 1.7485714285714287,
+        "fip": 2.4283983460413667,
+        "hr_per_9": 0.6171428571428571,
+        "ip": 175.0,
+        "k_bb_pct": 0.23423423423423423,
+        "k_per_9": 9.514285714285714,
+        "league_cfip": 3.0512554888985095
+      },
+      "oracle": {
+        "label": true,
+        "metric": "fip",
+        "target": "fip_rise_ge_0_50_next",
+        "value": 3.847162316824707,
+        "year": 2023
+      },
+      "player_id": "verlaju01",
+      "player_name": "Justin Verlander",
+      "role": "pitcher",
+      "sample": {
+        "minimum": 50,
+        "qualified": true,
+        "unit": "IP",
+        "value": 175.0
+      },
+      "warnings": [],
+      "year": 2022
     },
     {
       "id": "pitcher:wheelza01:2024",

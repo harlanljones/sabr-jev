@@ -4,11 +4,11 @@ Status: infrastructure only. Prospective accuracy is pending, not claimed.
 
 | Item | Value |
 |---|---|
-| Enrollable cohort | 2026 → 2027 (derived from frozen pins, not hand-set) |
-| Cutoff | 2027-01-01T00:00:00Z (Jan 1 of outcome season, stricter than opening day) |
+| Enrollable cohort | 2026 → 2027 (derived from frozen pins, not hand-set) || Cutoff | 2027-01-01T00:00:00Z (Jan 1 of outcome season, stricter than opening day) |
 | Recordings eligible today | 0 (all 10 recordings are 2024/2025; capture refuses them as historical) |
 | Report status string | `"prospective, accuracy pending"` |
 | Ledger guarantee | append-only, hash-chained — **cannot prove external capture time** |
+| Threshold revision v2 | act 0.65 / review 0.45; Noul decoupled (no veto). Original 0.8/0.5 made act unreachable across 35 recordings (max season_read conf 0.68, every act capped by the Noul-review veto). Bars stay provisional; v3 tuning waits on prospective outcomes. |
 | Historical 2024 → 2025 joins | retrospective plumbing only, never validation |
 
 ## Cohort and cutoff

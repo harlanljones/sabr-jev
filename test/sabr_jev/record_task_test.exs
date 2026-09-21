@@ -33,7 +33,7 @@ defmodule Mix.Tasks.Sabr.RecordTest do
     refute File.exists?(Path.join(root, "output"))
   end
 
-  test "preserves all 25 frozen oracle filenames and verifies strict output containment", %{
+  test "preserves all 30 frozen oracle filenames and verifies strict output containment", %{
     root: root
   } do
     output = Path.join(root, "recordings")
@@ -44,10 +44,13 @@ defmodule Mix.Tasks.Sabr.RecordTest do
 
     assert destinations |> Enum.map(&Path.basename(&1.path)) |> Enum.sort() == [
              "batter--acunaro01--2023.json",
+             "batter--alvaryo01--2022.json",
              "batter--arozara01--2024.json",
              "batter--bellico01--2023.json",
              "batter--bettsmo01--2023.json",
              "batter--freemfr01--2023.json",
+             "batter--goldspa01--2022.json",
+             "batter--guerrvl02--2021.json",
              "batter--hendegu01--2024.json",
              "batter--judgeaa01--2022.json",
              "batter--judgeaa01--2024.json",
@@ -57,6 +60,7 @@ defmodule Mix.Tasks.Sabr.RecordTest do
              "batter--sotoju01--2024.json",
              "batter--wittbo02--2024.json",
              "pitcher--alcansa01--2022.json",
+             "pitcher--biebesh01--2020.json",
              "pitcher--burneco01--2021.json",
              "pitcher--colege01--2023.json",
              "pitcher--degroja01--2021.json",
@@ -67,6 +71,7 @@ defmodule Mix.Tasks.Sabr.RecordTest do
              "pitcher--skubata01--2024.json",
              "pitcher--snellbl01--2023.json",
              "pitcher--sotogr01--2024.json",
+             "pitcher--verlaju01--2022.json",
              "pitcher--wheelza01--2024.json"
            ]
 

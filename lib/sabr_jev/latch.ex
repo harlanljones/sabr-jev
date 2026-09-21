@@ -1,10 +1,20 @@
 defmodule SabrJev.Latch do
-  @moduledoc "Provisional confidence latch for validated typed judgments."
+  @moduledoc """
+  Provisional confidence latch for validated typed judgments.
+
+  The card route comes from the Choice/Score answers alone: they judge the
+  season on the card. The Noul judges a different question (next season) with
+  a different uncertainty profile, so it keeps its own act/review and never
+  demotes the season read — across 35 recordings the strongest next-season
+  lean was 0.81 while season reads reached 0.68, and coupling the two made
+  act unreachable in practice. Bars stay provisional until prospective
+  outcomes arrive; nothing here claims calibration.
+  """
 
   alias SabrJev.{Judgments, Questions}
 
-  @choice_score_act 0.8
-  @choice_score_review 0.5
+  @choice_score_act 0.65
+  @choice_score_review 0.45
   @noul_act 0.85
   @rank %{act: 0, review: 1, escalate: 2}
 
@@ -27,9 +37,7 @@ defmodule SabrJev.Latch do
       choice_score_routes =
         for {_id, type, route} <- typed, type in ["choice", "score"], do: route
 
-      noul_routes = for {_id, "noul", route} <- typed, do: route
-      base = worst(choice_score_routes)
-      route = if base == :act and :review in noul_routes, do: :review, else: base
+      route = worst(choice_score_routes)
       {route, reasons} = enforce_sample(route, card["sample"])
 
       {:ok,

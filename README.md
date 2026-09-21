@@ -21,26 +21,26 @@ prospective evaluation protocol instead of vibes.
 
 ## Results
 
-Thirty-two real cards from pinned Lahman inputs; thirty immutable Jev
+Thirty-seven real cards from pinned Lahman inputs; thirty-five immutable Jev
 recordings; every latch route computed from frozen artifacts, never invented.
 Explore them as stories at `/storylines`, or card by card in the workbench.
 
 | Slice | Detail |
 |---|---|
-| Cards | 32 (16 batter, 16 pitcher, seasons 2021–2025) |
-| Recordings | 30 (25 with retrospective oracle Noul; 2025s Choice/Score-only; Strider 2023 has no oracle — 7 outs in 2024) |
+| Cards | 37 (19 batter, 18 pitcher, seasons 2020–2025) |
+| Recordings | 35 (30 with retrospective oracle Noul; 2025s Choice/Score-only; Strider 2023 has no oracle — 7 outs in 2024) |
 | Unrecorded | Trout 2024, deGrom 2024 (underqualified demos — honest empty states) |
-| Routes | 10 review · 18 escalate · 0 act — the model is a skeptic; every call shows full probabilities |
+| Routes | 4 act · 9 review · 22 escalate — the gate stays skeptical; act requires every Choice/Score ≥ 0.65 |
 
 | Check | Result |
 |---|---|
-| Offline Elixir suite (`mix test`, no API key) | 97 passed |
+| Offline Elixir suite (`mix test`, no API key) | 101 passed |
 | Python ETL + metric suite | 23 passed |
 | `mix format --check-formatted`, `mix compile --warnings-as-errors` | clean |
 | ETL rebuild of `priv/data/cards.json` | byte-identical |
 | Live `/`, `/storylines`, `/about` | 200, content-checked |
 | Prospective accuracy | **pending by design** — infrastructure only, first enrollable cohort 2026→2027 |
-| Latch thresholds | **provisional** (N=30 recordings, labeled minimum N≥30 for tuning — data exists, tuning does not) |
+| Latch thresholds | **provisional, revised v2** (act 0.65 / review 0.45; Noul act/review decoupled from the season read) |
 
 ## Use cases
 
@@ -70,8 +70,8 @@ flowchart LR
 flowchart TD
     A[Validated answers] --> B{Answer type}
     B -->|Choice / Score| C{confidence}
-    C -->|≥ 0.8| ACT[act]
-    C -->|≥ 0.5| REV[review]
+    C -->|≥ 0.65| ACT[act]
+    C -->|≥ 0.45| REV[review]
     C -->|else, or 'other'| ESC[escalate]
     B -->|Noul: max p, 1-p| D{confidence}
     D -->|≥ 0.85| ACT
@@ -82,7 +82,7 @@ flowchart TD
     style ESC fill:#e8cfc8
 ```
 
-Headlines are Lahman-feasible only: batter **OPS+ (Sabr-Jev)** + wOBA with ISO/BB%/K%/BABIP/PA shape; pitcher **FIP** + ERA + **K-BB%** with IP/HR-BB-K-per-9 shape. Jev receives precomputed numbers and never computes. Formulas, provenance, and counting rules: [`docs/data.md`](docs/data.md). Prospective protocol: [`docs/evaluation.md`](docs/evaluation.md). Input pins: [`docs/data-sources.md`](docs/data-sources.md).
+Headlines are Lahman-feasible only. The latch diagram shows v2 bars. Revision note: under the original bars (act ≥ 0.8 on every Choice/Score, Noul-review demotion) act was unreachable across all 35 live recordings — max season_read confidence 0.68; the coupled Noul veto alone capped every act route at review. Formulas, provenance, and counting rules: [`docs/data.md`](docs/data.md). Prospective protocol: [`docs/evaluation.md`](docs/evaluation.md). Input pins: [`docs/data-sources.md`](docs/data-sources.md).
 
 ## Quick start
 

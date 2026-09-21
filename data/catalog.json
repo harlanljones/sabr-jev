@@ -2,10 +2,13 @@
   "purpose": "Hand-selected real demonstration, not an evaluation holdout. IDs verified against pinned People/Batting/Pitching CSVs. The 2020-2025 storyline set centers famous seasons to explore how the model reacts; the original twelve remain for latch-boundary coverage including underqualified samples.",
   "cards": [
     "batter:acunaro01:2023",
+    "batter:alvaryo01:2022",
     "batter:arozara01:2024",
     "batter:bellico01:2023",
     "batter:bettsmo01:2023",
     "batter:freemfr01:2023",
+    "batter:goldspa01:2022",
+    "batter:guerrvl02:2021",
     "batter:hendegu01:2024",
     "batter:judgeaa01:2022",
     "batter:judgeaa01:2024",
@@ -18,6 +21,7 @@
     "batter:troutmi01:2024",
     "batter:wittbo02:2024",
     "pitcher:alcansa01:2022",
+    "pitcher:biebesh01:2020",
     "pitcher:burneco01:2021",
     "pitcher:colege01:2023",
     "pitcher:degroja01:2021",
@@ -31,6 +35,7 @@
     "pitcher:snellbl01:2023",
     "pitcher:sotogr01:2024",
     "pitcher:stridsp01:2023",
+    "pitcher:verlaju01:2022",
     "pitcher:wheelza01:2024",
     "pitcher:wheelza01:2025"
   ]
