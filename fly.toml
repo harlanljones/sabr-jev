@@ -1,0 +1,24 @@
+# fly.toml — sabr-jev demo deployment
+#
+# Single shared-CPU machine, always warm (LiveView needs the BEAM up).
+# No database: the image bakes in priv/data/cards.json + priv/jev/recordings.
+# No TYPESAFE_API_KEY on the instance: the demo is read-only, no live inference.
+
+app = "sabr-jev"
+primary_region = "ord"
+
+[build]
+
+[env]
+PHX_HOST = "sabr-jev.fly.dev"
+
+[http_service]
+internal_port = 4000
+force_https = true
+auto_stop_machines = false
+auto_start_machines = true
+min_machines_running = 1
+processes = ["app"]
+
+[[vm]]
+size = "shared-cpu-1x"
