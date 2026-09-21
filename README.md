@@ -34,7 +34,9 @@ make test-data         # offline ETL + metric tests, no network
   sample value. Mutations are rejected before any Jev use.
 - `SabrJev.Questions` / `SabrJev.Judgments`: frozen Choice/Score/Noul pack on
   precomputed state JSON only. Recordings in `priv/jev/recordings/` are
-  immutable; `mix sabr.record` writes them (needs `TYPESAFE_API_KEY`).
+  immutable; `mix sabr.record` writes them (needs `TYPESAFE_API_KEY` or the
+  local Jev key). Ten recordings ship: six 2024 cards with retrospective
+  oracle Nouls plus the four qualified 2025 cards (Choice/Score only, no T+1).
 - `SabrJev.Latch`: Choice/Score → act/review/escalate; Noul → act/review
   only (floor 0.5, escalate unreachable on Noul alone). Thresholds are
   provisional; insufficient sample cannot act.

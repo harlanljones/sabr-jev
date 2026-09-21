@@ -13,4 +13,4 @@ OWNS: lib/sabr_jev/catalog.ex, lib/sabr_jev_web/**, assets/**, priv/static/**, t
 - [x] G2: Independent spec compliance review passes.
   EVIDENCE: Cycle 1 SPEC PASS (G0 boundary, full UI, latch rules, no invention, falsifiers, no overclaims; one non-blocking latent note on Noul-skip placement).
 - [x] G3: Independent quality review passes.
-  EVIDENCE: Cycle 1 QUALITY PASS (format/compile clean, fail-closed paths, no cycles, no XSS, mirroring documented). Six non-blocking advisories; four applied (test smell, pinned route, get/2 fallback, mirror comment), two accepted (untested corrupt-catalog edges fail closed by inspection). Re-verified: 86 tests, 0 failures; format and warnings-as-errors green.
+  EVIDENCE: Cycle 1 QUALITY PASS (format/compile clean, fail-closed paths, no cycles, no XSS, mirroring documented). Six non-blocking advisories; four applied (test smell, pinned route, get/2 fallback, mirror comment), two accepted (untested corrupt-catalog edges fail closed by inspection). Re-verified: 87 tests, 0 failures; format and warnings-as-errors green.

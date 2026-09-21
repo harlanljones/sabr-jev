@@ -9,3 +9,5 @@ data/parquet/
 /tmp/
 __pycache__/
 *.py[cod]
+
+.hermes/skills/
