@@ -329,6 +329,23 @@ defmodule Mix.Tasks.Sabr.RecordTest do
     {record, cards[record["card_id"]]}
   end
 
+  # `mix sabr.record` resolves a credential eagerly (before it calls an injected
+  # evaluator), so an offline test that injects the client must still supply one.
+  # The injected client never uses it and no network call is made; without this
+  # the test passes only on a machine that has a real ~/.hermes/jev/key.
+  defp with_placeholder_credential(fun) do
+    previous = System.get_env("TYPESAFE_API_KEY")
+    System.put_env("TYPESAFE_API_KEY", "placeholder-not-a-real-key")
+
+    try do
+      fun.()
+    after
+      if previous,
+        do: System.put_env("TYPESAFE_API_KEY", previous),
+        else: System.delete_env("TYPESAFE_API_KEY")
+    end
+  end
+
   defp catalog_card(id) do
     catalog = Jason.decode!(File.read!("priv/data/cards.json"))
     Enum.find(catalog["cards"], &(&1["id"] == id))
@@ -413,14 +430,16 @@ defmodule Mix.Tasks.Sabr.RecordTest do
       })
     )
 
-    Record.run(
-      ["--prospective", "--catalog", catalog_path, "--output", output, "--card", card["id"]],
-      client_factory: fn _opts -> :client end,
-      evaluator: fn :client, _card, opts ->
-        send(parent, {:asked_mode, Keyword.get(opts, :mode)})
-        {:ok, record}
-      end
-    )
+    with_placeholder_credential(fn ->
+      Record.run(
+        ["--prospective", "--catalog", catalog_path, "--output", output, "--card", card["id"]],
+        client_factory: fn _opts -> :client end,
+        evaluator: fn :client, _card, opts ->
+          send(parent, {:asked_mode, Keyword.get(opts, :mode)})
+          {:ok, record}
+        end
+      )
+    end)
 
     assert_received {:asked_mode, :prospective}
 
