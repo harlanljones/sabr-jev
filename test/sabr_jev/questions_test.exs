@@ -274,4 +274,63 @@ defmodule SabrJev.QuestionsTest do
     assert {:error, {:invalid_state, _}} =
              Questions.for_card(put_in(pitcher, ["judgment_state", "metrics", "ops_plus"], 100))
   end
+
+  test "prospective mode asks the frozen Noul without a realized T+1" do
+    card =
+      @batter
+      |> put_in(["year"], 2025)
+      |> put_in(["id"], "batter:example:2025")
+      |> put_in(["oracle"], nil)
+
+    assert {:ok, retrospective} = Questions.for_card(card)
+    refute Keyword.has_key?(retrospective, :ops_plus_drop_ge_10_next)
+
+    assert {:ok, prospective} = Questions.for_card(card, mode: :prospective)
+
+    assert Keyword.keys(prospective) ==
+             [:season_read, :confidence_in_signal, :profile, :ops_plus_drop_ge_10_next]
+
+    assert %Noul{} = prospective[:ops_plus_drop_ge_10_next]
+
+    # Same judged state, different question set: a prospective prediction must
+    # not hash like a retrospective recording of the same card.
+    refute Questions.hash(prospective) == Questions.hash(retrospective)
+
+    assert Questions.state_hash(card["judgment_state"]) ==
+             Questions.state_hash(@batter["judgment_state"])
+  end
+
+  test "prospective mode refuses a card whose T+1 outcome is already realized" do
+    assert {:error, {:invalid_prospective_marker, _}} =
+             Questions.for_card(@batter, mode: :prospective)
+  end
+
+  test "prospective mode still requires an available qualified current signal" do
+    card = put_in(@batter, ["oracle"], nil)
+
+    unavailable = put_in(card, ["judgment_state", "metrics", "ops_plus"], nil)
+
+    assert {:error, {:invalid_prospective_marker, _}} =
+             Questions.for_card(unavailable, mode: :prospective)
+
+    unqualified =
+      card
+      |> put_in(["judgment_state", "sample", "value"], nil)
+      |> put_in(["sample"], %{
+        "qualified" => false,
+        "minimum" => 200,
+        "value" => nil,
+        "unit" => "PA"
+      })
+
+    assert {:error, {:invalid_prospective_marker, _}} =
+             Questions.for_card(unqualified, mode: :prospective)
+  end
+
+  test "an unknown question mode is refused" do
+    assert {:error, {:invalid_mode, :prospective_ish}} =
+             Questions.for_card(@batter, mode: :prospective_ish)
+
+    assert {:error, {:invalid_card, _}} = Questions.for_card(:not_a_card, mode: :prospective)
+  end
 end

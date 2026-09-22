@@ -328,4 +328,154 @@ defmodule Mix.Tasks.Sabr.RecordTest do
     record = Jason.decode!(File.read!(path))
     {record, cards[record["card_id"]]}
   end
+
+  defp catalog_card(id) do
+    catalog = Jason.decode!(File.read!("priv/data/cards.json"))
+    Enum.find(catalog["cards"], &(&1["id"] == id))
+  end
+
+  # Synthetic composite, explicitly distinguished from a recorded response. The
+  # judged card has no realized T+1 season, so its real recording carries no Noul
+  # answer. The Noul answer here is the real recorded answer for the same frozen
+  # question from the same player's judged season, grafted onto the fresh card's
+  # real Choice/Score record so the prospective contract can be exercised before
+  # a 2026 source exists.
+  defp prospective_record(card) do
+    {:ok, questions} = SabrJev.Questions.for_card(card, mode: :prospective)
+    fresh = Jason.decode!(File.read!("priv/jev/recordings/batter--judgeaa01--2025.json"))
+    judged = Jason.decode!(File.read!("priv/jev/recordings/batter--judgeaa01--2024.json"))
+    noul_id = SabrJev.Questions.noul_id("batter")
+
+    %{
+      "schema_version" => 1,
+      "card_id" => card["id"],
+      "state_hash" => SabrJev.Questions.state_hash(card["judgment_state"]),
+      "questions_hash" => SabrJev.Questions.hash(questions),
+      "model" => fresh["model"],
+      "mode" => "prospective",
+      "recorded_at" => fresh["recorded_at"],
+      "response" => %{
+        "model" => fresh["model"],
+        "usage" => fresh["response"]["usage"],
+        "answers" =>
+          Map.put(fresh["response"]["answers"], noul_id, judged["response"]["answers"][noul_id])
+      },
+      "answers" => Map.put(fresh["answers"], noul_id, judged["answers"][noul_id]),
+      "source_lineage" => fresh["source_lineage"]
+    }
+  end
+
+  test "a prospective recording answers the Noul for a card with no realized T+1" do
+    card = catalog_card("batter:judgeaa01:2025")
+    record = prospective_record(card)
+
+    assert card["oracle"] == nil
+    assert {:ok, ^record} = SabrJev.Judgments.validate_record(record, card)
+
+    # The retrospective recording of the same card stays valid under its own
+    # question set, so the two modes coexist without either masquerading as the
+    # other: only the prospective one can be captured.
+    retrospective =
+      Jason.decode!(File.read!("priv/jev/recordings/batter--judgeaa01--2025.json"))
+
+    assert {:ok, _} = SabrJev.Judgments.validate_record(retrospective, card)
+    refute retrospective["questions_hash"] == record["questions_hash"]
+    refute Map.has_key?(retrospective, "mode")
+  end
+
+  test "a prospective record is refused for a card whose T+1 is already realized" do
+    {judged, card} = real_record_and_card()
+
+    assert {:error, _} =
+             SabrJev.Judgments.validate_record(Map.put(judged, "mode", "prospective"), card)
+  end
+
+  test "an unknown record mode is refused rather than treated as retrospective" do
+    {record, card} = real_record_and_card()
+
+    assert {:error, {:invalid_record, _}} =
+             SabrJev.Judgments.validate_record(Map.put(record, "mode", "sometimes"), card)
+  end
+
+  test "the record task writes prospective recordings for the enrollable season", %{root: root} do
+    card = catalog_card("batter:judgeaa01:2025")
+    record = prospective_record(card)
+    catalog_path = Path.join(root, "cards.json")
+    output = Path.join(root, "prospective")
+    parent = self()
+
+    File.write!(
+      catalog_path,
+      Jason.encode!(%{
+        "schema_version" => 1,
+        "provenance" => record["source_lineage"]["provenance"],
+        "cards" => [card]
+      })
+    )
+
+    Record.run(
+      ["--prospective", "--catalog", catalog_path, "--output", output, "--card", card["id"]],
+      client_factory: fn _opts -> :client end,
+      evaluator: fn :client, _card, opts ->
+        send(parent, {:asked_mode, Keyword.get(opts, :mode)})
+        {:ok, record}
+      end
+    )
+
+    assert_received {:asked_mode, :prospective}
+
+    written = Path.join(output, "batter--judgeaa01--2025.json")
+    assert File.exists?(written)
+    assert Jason.decode!(File.read!(written))["mode"] == "prospective"
+  end
+
+  test "the record task refuses a prospective recording for an already-resolved season", %{
+    root: root
+  } do
+    judged_card = catalog_card("batter:judgeaa01:2024")
+    {record, _card} = real_record_and_card()
+    catalog_path = Path.join(root, "cards.json")
+    output = Path.join(root, "prospective")
+
+    File.write!(
+      catalog_path,
+      Jason.encode!(%{
+        "schema_version" => 1,
+        "provenance" => record["source_lineage"]["provenance"],
+        "cards" => [judged_card]
+      })
+    )
+
+    assert_raise Mix.Error, ~r/enrollable/, fn ->
+      Record.run(
+        [
+          "--prospective",
+          "--catalog",
+          catalog_path,
+          "--output",
+          output,
+          "--card",
+          judged_card["id"]
+        ],
+        client_factory: fn _opts -> flunk("credentials must not be resolved") end,
+        evaluator: fn _, _, _ -> flunk("Jev must not be called") end
+      )
+    end
+
+    refute File.exists?(output)
+  end
+
+  test "the prospective default output directory is separate from the frozen recordings" do
+    assert Record.prospective_output_dir() == "priv/jev/recordings/prospective"
+
+    card = catalog_card("batter:judgeaa01:2025")
+
+    assert {:ok, [destination]} =
+             Record.prepare_destinations(Record.prospective_output_dir(), [card])
+
+    assert Path.dirname(Path.expand(destination.path)) ==
+             Path.expand("priv/jev/recordings/prospective")
+
+    assert Path.basename(destination.path) == "batter--judgeaa01--2025.json"
+  end
 end

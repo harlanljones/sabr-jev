@@ -2,20 +2,24 @@ defmodule SabrJev.Prospective do
   @moduledoc """
   Prospective enrollment and capture before an outcome season.
 
-  Cohort and baseline freeze before capture. Enrollment is limited to the single
-  cycle that follows the latest season in the frozen source pins, and capture
-  must strictly precede that outcome season under a conservative January 1
-  cutoff. The local ledger is append-only and hash chained, but it cannot prove
-  external capture time: a local writer controls both the file and its clock.
+  Cohort and baseline freeze before capture. Enrollment is limited to the newest
+  season in the frozen source pins: that is the only season whose outcome season
+  is not yet in the pins, and it is also the only season that can have a card at
+  all. Capture must strictly precede the outcome season under a conservative
+  January 1 cutoff. The local ledger is append-only and hash chained, but it
+  cannot prove external capture time: a local writer controls both the file and
+  its clock.
 
   Caller contract: pass an already-verified ledger. `capture/4` verifies the
   supplied ledger itself and fails closed, so a corrupt input is never extended.
 
   The record handed to `capture/4` must carry exactly one accepted shape: a
   top-level `"probability"` in 0..1 (injected by the capture task from the
-  recorded Noul answer), plus non-empty `"card_id"`, `"state_hash"`,
-  `"questions_hash"`, and `"model"`. `capture/4` accepts no alternate spelling
-  and never derives a missing field.
+  recorded Noul answer), a `"mode"` of `"prospective"`, plus non-empty
+  `"card_id"`, `"state_hash"`, `"questions_hash"`, and `"model"`. `capture/4`
+  accepts no alternate spelling and never derives a missing field. A missing or
+  non-prospective mode is refused, so a retrospective recording can never be
+  captured as a prospective prediction.
   """
 
   # Mirrors data/sources.json and priv/data/cards.json provenance.latest_season.
@@ -27,8 +31,14 @@ defmodule SabrJev.Prospective do
   @spec latest_frozen_season() :: pos_integer()
   def latest_frozen_season, do: @latest_frozen_season
 
+  # The enrollable cohort is the newest season in the pins. A cohort of
+  # latest_frozen_season + 1 would be unenrollable by construction: that season
+  # has no card until the ETL pins the source that makes it historical.
   @spec enrollable_year() :: pos_integer()
-  def enrollable_year, do: @latest_frozen_season + 1
+  def enrollable_year, do: @latest_frozen_season
+
+  @spec outcome_year() :: pos_integer()
+  def outcome_year, do: enrollable_year() + 1
 
   @spec ledger_limit() :: String.t()
   def ledger_limit, do: @ledger_limit
@@ -46,6 +56,22 @@ defmodule SabrJev.Prospective do
   @spec cutoff_iso() :: String.t()
   def cutoff_iso, do: cutoff() |> DateTime.to_iso8601()
 
+  # Pure and as-of: the tasks never consult the wall clock, so tests and the UI
+  # can ask about any instant instead of depending on the day they run.
+  @spec window_open?(DateTime.t()) :: boolean()
+  def window_open?(%DateTime{} = at), do: DateTime.compare(at, cutoff()) == :lt
+
+  @spec retrospective_note() :: String.t()
+  def retrospective_note,
+    do: "Retrospective T+1 joins cover seasons through #{@latest_frozen_season - 1}."
+
+  @spec window_note() :: String.t()
+  def window_note do
+    "Cohort #{enrollable_year()} -> #{outcome_year()} closed #{cutoff_iso()}; " <>
+      "the #{outcome_year()} -> #{outcome_year() + 1} cohort opens when a " <>
+      "#{outcome_year()} source is pinned."
+  end
+
   @spec enroll([map()], keyword()) :: map()
   def enroll(cards, opts) when is_list(cards) and is_list(opts) do
     %{
@@ -54,7 +80,7 @@ defmodule SabrJev.Prospective do
       year: enrollable_year(),
       cutoff: cutoff(),
       cutoff_iso: cutoff_iso(),
-      note: "Historical 2024 -> 2025 joins are retrospective plumbing only."
+      note: retrospective_note() <> " " <> window_note()
     }
   end
 
@@ -90,10 +116,12 @@ defmodule SabrJev.Prospective do
 
   @spec retrospective?(String.t()) :: boolean()
   def retrospective?(id) when is_binary(id) do
-    # Any card from a season whose next season already exists in the frozen pins
-    # is retrospective plumbing, never prospective validation.
+    # A join is retrospective only when both seasons are in the frozen pins: the
+    # card's own season and the T+1 season it is scored against. The newest
+    # season in the pins has no T+1 yet, so it is neither retrospective nor
+    # enrollable once its window has closed.
     case card_year(id) do
-      year when is_integer(year) -> year <= @latest_frozen_season
+      year when is_integer(year) -> year + 1 <= @latest_frozen_season
       _ -> false
     end
   end
@@ -125,13 +153,9 @@ defmodule SabrJev.Prospective do
 
   defp check_prospective_year(_), do: {:error, :historical_cohort}
 
-  defp check_capture_time(%{"year" => year}, at) do
-    if DateTime.compare(at, cutoff_for(year)) == :lt,
-      do: :ok,
-      else: {:error, :capture_after_cutoff}
+  defp check_capture_time(_card, at) do
+    if window_open?(at), do: :ok, else: {:error, :window_closed}
   end
-
-  defp check_capture_time(_, _), do: {:error, :historical_cohort}
 
   defp check_unclaimed(ledger, %{"id" => id}) do
     existing =
@@ -146,10 +170,13 @@ defmodule SabrJev.Prospective do
   end
 
   # A capture line is only useful if it can be joined to the exact judged state
-  # and re-read later, so every field is required rather than defaulted.
+  # and re-read later, so every field is required rather than defaulted. The mode
+  # is required and must be prospective: a retrospective recording of the same
+  # card is a different artifact and can never stand in as a prediction.
   defp record_entry(card, record) when is_map(record) do
     with {:ok, id} <- card_id(record),
          :ok <- same_card?(card, id),
+         :ok <- prospective_mode(record),
          {:ok, state_hash} <- non_empty(record, "state_hash"),
          {:ok, questions_hash} <- non_empty(record, "questions_hash"),
          {:ok, model} <- non_empty(record, "model"),
@@ -160,6 +187,7 @@ defmodule SabrJev.Prospective do
          "card_id" => card["id"],
          "noul_id" => noul_id(card),
          "probability" => probability,
+         "mode" => "prospective",
          "state_hash" => state_hash,
          "questions_hash" => questions_hash,
          "model" => model
@@ -168,6 +196,10 @@ defmodule SabrJev.Prospective do
   end
 
   defp record_entry(_card, _record), do: {:error, :record_card_mismatch}
+
+  defp prospective_mode(%{"mode" => "prospective"}), do: :ok
+  defp prospective_mode(%{"mode" => _other}), do: {:error, :not_prospective_recording}
+  defp prospective_mode(_record), do: {:error, {:record_field_required, "mode"}}
 
   defp card_id(%{"card_id" => id}) when is_binary(id), do: {:ok, id}
   defp card_id(_), do: {:error, :record_card_mismatch}

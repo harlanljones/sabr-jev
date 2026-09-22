@@ -5,7 +5,7 @@ Scope: Approved working thin slice with prospective infrastructure; future accur
 - [x] G1: All offline Elixir application and latch tests pass without API key.
   CHECK: env -u TYPESAFE_API_KEY mix test && printf 'OFFLINE_TESTS_PASS\n'
   EXPECT: OFFLINE_TESTS_PASS
-  EVIDENCE: 111 tests, 0 failures (env -u TYPESAFE_API_KEY mix test). Python ETL suite 23/23 OK.
+  EVIDENCE: 133 tests, 0 failures (env -u TYPESAFE_API_KEY mix test). Python ETL suite 23/23 OK.
 - [x] G2: ETL and metric tests pass.
   CHECK: python3 -m unittest discover -s tests -v
   EXPECT: OK
@@ -21,8 +21,8 @@ Scope: Approved working thin slice with prospective infrastructure; future accur
 - [x] G5: Live HTTP/LiveView workbench, review probabilities and /about exercised.
   EVIDENCE: 20 LiveView tests (role toggle, card select, review/escalate lanes with full probabilities and no bold recommendation, recorded 2025 latch without Noul, honest no-recording + explicit Noul skip, labeled oracle, underqualified sample, verdict framing + audit trail, storyline index with real verdict chips + lens filter + workbench deep-link, footer, /about formulas/provenance/pending evaluation). Live server: /, /storylines and /about 200 with content checks. Catalog boundary: 7 tests green; outer/state metric equality and PA/IP-sample equality enforced before any Judgments/Latch use.
 - [x] G6: Prospective refusal, tamper detection, pending outcomes and scorer independently reviewed; no false accuracy claim.
-  CHECK: mix test test/sabr_jev/{prospective,evaluation,capture_task,evaluate_task}_test.exs
-  EXPECT: refusals for historical cohort, tampered ledger, late capture, mixed cutoffs, missing outcomes pending
-  EVIDENCE: leaf-4 gate G1/G2/G3 pass; docs/evaluation.md documents all refusals; `status: "prospective, accuracy pending"` in reports; no Claim of accuracy.
+  CHECK: mix test test/sabr_jev/{prospective,evaluation,capture_task,evaluate_task,record_task}_test.exs
+  EXPECT: refusals for historical cohort, tamper, capture outside the cohort window, mixed cutoffs, missing outcomes pending
+  EVIDENCE: leaf-4 gate G1/G2/G3 pass; docs/evaluation.md documents all refusals; `status: "prospective, accuracy pending"` in reports; no accuracy claim claimed. Cohort definition corrected (2026-09-22): the enrollable cohort is the newest pinned season (2025 → 2026, cutoff 2026-01-01) instead of `latest_frozen_season + 1`, which had asked for a card no pin could produce; `retrospective?/1` is now `year + 1 <= latest_frozen_season`; capture refuses a closed window as `:window_closed`; a prospective prediction is recorded by `mix sabr.record --prospective` (Noul without an oracle marker, `mode: prospective`, separate `priv/jev/recordings/prospective/`) and both capture and the scorer refuse any line whose mode is not prospective; the report's `cutoff` is the ledger's frozen cutoff. Real-catalog test asserts the closed window per card. Live check 2026-09-22: two real prospective recordings validated (batter judge 2025 Noul 0.48, pitcher Skene 2025 Noul 0.21), then capture refused them `:window_closed`. Prospective accuracy remains pending: no cohort outcome exists.
 - [x] G7: Independent spec then quality reviews approve integrated build.
   EVIDENCE: leaf-3 and leaf-4 gates pass; root G4/G6 verified.

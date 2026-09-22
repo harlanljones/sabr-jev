@@ -9,16 +9,22 @@ defmodule SabrJev.Judgments do
   # Wire probabilities and Score values are independently rounded to two decimals.
   @score_tolerance 0.011
   @record_keys ~w(schema_version card_id state_hash questions_hash model recorded_at response answers source_lineage)
+  # Prospective recordings are the only artifacts that may carry a mode. The 48
+  # frozen retrospective recordings have no such key and must validate unchanged.
+  @prospective_mode "prospective"
+  @retrospective_mode "retrospective"
 
   @spec evaluate(TypeSafeAPI.Client.t(), map(), keyword()) :: {:ok, map()} | {:error, term()}
   def evaluate(client, card, opts \\ []) do
-    with {:ok, questions} <- Questions.for_card(card),
+    with {:ok, mode} <- record_mode(Keyword.get(opts, :mode, :retrospective)),
+         {:ok, questions} <- Questions.for_card(card, mode: mode),
          {:ok, result} <- TypeSafeAPI.evaluate(client, card["judgment_state"], questions),
          :ok <- validate_raw_response(result.raw, questions) do
       from_answers(card, questions, result.model, result.answers,
         response: result.raw,
         recorded_at: Keyword.get(opts, :recorded_at),
-        source_lineage: Keyword.get(opts, :source_lineage)
+        source_lineage: Keyword.get(opts, :source_lineage),
+        mode: mode
       )
     end
   end
@@ -26,26 +32,49 @@ defmodule SabrJev.Judgments do
   @spec from_answers(map(), keyword(), String.t(), map(), keyword()) ::
           {:ok, map()} | {:error, term()}
   def from_answers(card, questions, model, answers, opts \\ []) do
-    with :ok <- validate_model(model),
+    with {:ok, mode} <- record_mode(Keyword.get(opts, :mode, :retrospective)),
+         :ok <- validate_model(model),
          :ok <- validate_answers(answers, questions),
          {:ok, response} <- required_response(opts),
          :ok <- validate_raw_response(response, questions),
          {:ok, recorded_at} <- recorded_at(Keyword.get(opts, :recorded_at)),
          {:ok, lineage} <- source_lineage(Keyword.get(opts, :source_lineage)),
-         record = %{
-           "schema_version" => @schema_version,
-           "card_id" => card["id"],
-           "state_hash" => Questions.state_hash(card["judgment_state"]),
-           "questions_hash" => Questions.hash(questions),
-           "model" => model,
-           "recorded_at" => recorded_at,
-           "response" => response,
-           "answers" =>
-             Map.new(answers, fn {id, answer} -> {to_string(id), serialize(answer)} end),
-           "source_lineage" => lineage
-         },
+         record =
+           stamp_mode(
+             %{
+               "schema_version" => @schema_version,
+               "card_id" => card["id"],
+               "state_hash" => Questions.state_hash(card["judgment_state"]),
+               "questions_hash" => Questions.hash(questions),
+               "model" => model,
+               "recorded_at" => recorded_at,
+               "response" => response,
+               "answers" =>
+                 Map.new(answers, fn {id, answer} -> {to_string(id), serialize(answer)} end),
+               "source_lineage" => lineage
+             },
+             mode
+           ),
          {:ok, validated} <- validate_record(record, card) do
       {:ok, validated}
+    end
+  end
+
+  defp stamp_mode(record, :prospective), do: Map.put(record, "mode", @prospective_mode)
+  defp stamp_mode(record, :retrospective), do: record
+
+  defp record_mode(:prospective), do: {:ok, :prospective}
+  defp record_mode(:retrospective), do: {:ok, :retrospective}
+  defp record_mode(_other), do: {:error, {:invalid_record, "mode must be prospective"}}
+
+  # A mode is read from the artifact, never inferred from absence alone: an
+  # explicit unknown value is refused instead of degrading to retrospective.
+  defp mode_from_record(record) do
+    case Map.fetch(record, "mode") do
+      :error -> {:ok, :retrospective, @record_keys}
+      {:ok, @prospective_mode} -> {:ok, :prospective, @record_keys ++ ["mode"]}
+      {:ok, @retrospective_mode} -> {:ok, :retrospective, @record_keys ++ ["mode"]}
+      {:ok, other} -> {:error, {:invalid_record, "unknown record mode #{inspect(other)}"}}
     end
   end
 
@@ -58,8 +87,9 @@ defmodule SabrJev.Judgments do
 
   @spec validate_record(map(), map()) :: {:ok, map()} | {:error, term()}
   def validate_record(record, card) when is_map(record) and is_map(card) do
-    with {:ok, questions} <- Questions.for_card(card),
-         :ok <- exact_record_keys(record, @record_keys, "record"),
+    with {:ok, mode, keys} <- mode_from_record(record),
+         {:ok, questions} <- Questions.for_card(card, mode: mode),
+         :ok <- exact_record_keys(record, keys, "record"),
          true <- record["schema_version"] == @schema_version || {:error, :schema_version_mismatch},
          true <- record["card_id"] == card["id"] || {:error, :card_id_mismatch},
          true <-

@@ -3,7 +3,9 @@ defmodule Mix.Tasks.Sabr.Capture do
 
   @shortdoc "Captures prospective Jev judgments before the outcome season"
   @requirements ["app.start"]
-  @default_recordings "priv/jev/recordings"
+  # Capture reads only prospective predictions, which live outside the frozen
+  # retrospective recordings so neither artifact can be mistaken for the other.
+  @default_recordings "priv/jev/recordings/prospective"
 
   @impl Mix.Task
   def run(args, runtime_opts \\ []) do
@@ -146,6 +148,7 @@ defmodule Mix.Tasks.Sabr.Capture do
     case File.read(path) do
       {:ok, bytes} ->
         with {:ok, record} <- decode_record(bytes, path),
+             :ok <- require_prospective(record, path),
              {:ok, probability} <- recorded_probability(record, card, path) do
           {:ok, Map.put(record, "probability", probability)}
         end
@@ -153,12 +156,29 @@ defmodule Mix.Tasks.Sabr.Capture do
       {:error, :enoent} ->
         Mix.raise(
           "no recorded Jev judgment for #{card["id"]} at #{path}; " <>
-            "record the judgment with `mix sabr.record --card #{card["id"]}` before capturing"
+            "record the judgment with `mix sabr.record --card #{card["id"]} --prospective` " <>
+            "before capturing"
         )
 
       {:error, reason} ->
         Mix.raise("cannot read recording #{path}: #{inspect(reason)}")
     end
+  end
+
+  # A retrospective recording of the same card was made with its T+1 outcome
+  # already in the frozen pins, so it is a different artifact and can never stand
+  # in as a prediction. A recording without a mode fails closed as retrospective.
+  defp require_prospective(%{"mode" => "prospective"}, _path), do: :ok
+
+  defp require_prospective(%{"mode" => mode}, path) do
+    Mix.raise("recording #{path} is not a prospective prediction (mode: #{inspect(mode)})")
+  end
+
+  defp require_prospective(_record, path) do
+    Mix.raise(
+      "recording #{path} is not a prospective prediction (no mode); " <>
+        "record it first with `mix sabr.record --prospective`"
+    )
   end
 
   defp recording_path(card, dir) do

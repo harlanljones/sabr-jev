@@ -32,12 +32,20 @@ defmodule Mix.Tasks.Sabr.Evaluate do
         case Jason.decode(line) do
           {:ok, %{"card_id" => id, "noul_id" => noul, "probability" => p, "cutoff" => cutoff} = e}
           when is_binary(noul) and is_number(p) and is_binary(cutoff) ->
+            if e["mode"] != "prospective" do
+              Mix.raise(
+                "cannot score ledger line #{id}: not a prospective prediction " <>
+                  "(mode: #{inspect(e["mode"])})"
+              )
+            end
+
             %{
               "card_id" => id,
               "noul_id" => noul,
               "probability" => p,
               "captured_at" => e["captured_at"],
               "cutoff" => cutoff,
+              "mode" => "prospective",
               "baseline" => e["baseline"]
             }
 
@@ -55,6 +63,7 @@ defmodule Mix.Tasks.Sabr.Evaluate do
     baseline = opts |> Keyword.fetch!(:baseline) |> Jason.decode!()
     check_baseline_binding!(parsed, baseline)
     check_cutoff_uniformity!(parsed)
+    frozen_cutoff = ledger_cutoff(parsed)
 
     case SabrJev.Evaluation.score(parsed, realized, baseline: baseline) do
       {:error, reason} ->
@@ -66,7 +75,7 @@ defmodule Mix.Tasks.Sabr.Evaluate do
             status: "prospective, accuracy pending",
             mode: "prospective",
             ledger_limit: SabrJev.Prospective.ledger_limit(),
-            cutoff: SabrJev.Prospective.cutoff_iso(),
+            cutoff: frozen_cutoff,
             baseline: baseline
           })
 
@@ -85,6 +94,12 @@ defmodule Mix.Tasks.Sabr.Evaluate do
       Mix.raise("ledger mixes cohort cutoffs: #{Enum.join(Enum.sort(cutoffs), ", ")}")
     end
   end
+
+  # The report must describe the cohort the ledger actually froze. Reading the
+  # module's current cutoff would relabel an older ledger the moment the frozen
+  # source pins move to the next season.
+  defp ledger_cutoff([]), do: SabrJev.Prospective.cutoff_iso()
+  defp ledger_cutoff([%{"cutoff" => cutoff} | _]), do: cutoff
 
   defp check_baseline_binding!(entries, baseline) do
     mismatched =

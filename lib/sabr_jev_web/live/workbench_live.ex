@@ -2,6 +2,7 @@ defmodule SabrJevWeb.WorkbenchLive do
   use SabrJevWeb, :live_view
 
   alias SabrJev.Catalog
+  alias SabrJev.Prospective
 
   @positions ["batter", "pitcher"]
   @verdicts ["act", "review", "escalate"]
@@ -230,8 +231,7 @@ defmodule SabrJevWeb.WorkbenchLive do
         <h2 id="eval-heading">Evaluation status</h2>
         <p>Prospective evaluation: accuracy pending. No accuracy claim is made.</p>
         <p>
-          2024 → 2025 joins are retrospective plumbing only. The local ledger is
-          hash chained but cannot prove external capture time.
+          {Prospective.retrospective_note()} {Prospective.window_note()} The local ledger is hash chained but cannot prove external capture time.
         </p>
       </section>
 
@@ -895,7 +895,9 @@ defmodule SabrJevWeb.WorkbenchLive do
 
   defp oracle_projection(%{judgment: nil} = assigns), do: ~H""
 
-  defp oracle_projection(%{judgment: %{record: %{"answers" => answers}}, card: %{"role" => role}} = assigns) do
+  defp oracle_projection(
+         %{judgment: %{record: %{"answers" => answers}}, card: %{"role" => role}} = assigns
+       ) do
     noul_id = SabrJev.Questions.noul_id(role)
     noul = answers[noul_id]
 

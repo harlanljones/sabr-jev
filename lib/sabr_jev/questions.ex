@@ -75,9 +75,17 @@ defmodule SabrJev.Questions do
   def role_for_noul_id(_noul_id), do: "batter"
 
   @spec for_card(map()) :: {:ok, keyword()} | {:error, term()}
-  def for_card(card) when is_map(card) do
-    with {:ok, role, _state} <- validate_card_state(card),
-         {:ok, include_noul?} <- validate_oracle_marker(card, role) do
+  def for_card(card), do: for_card(card, [])
+
+  # `mode: :prospective` asks the next-season Noul before the outcome season
+  # exists, which is the only way the enrollable cohort can carry a prediction.
+  # The frozen Noul definition is shared between modes: only the marker check
+  # differs, so the ledger's noul_id stays comparable across both.
+  @spec for_card(map(), keyword()) :: {:ok, keyword()} | {:error, term()}
+  def for_card(card, opts) when is_map(card) and is_list(opts) do
+    with {:ok, mode} <- validate_mode(Keyword.get(opts, :mode, :retrospective)),
+         {:ok, role, _state} <- validate_card_state(card),
+         {:ok, include_noul?} <- noul_for(card, role, mode) do
       questions = [
         season_read: @season_read,
         confidence_in_signal: @confidence_in_signal,
@@ -88,7 +96,7 @@ defmodule SabrJev.Questions do
     end
   end
 
-  def for_card(_), do: {:error, {:invalid_card, "card must be a map"}}
+  def for_card(_, _), do: {:error, {:invalid_card, "card must be a map"}}
 
   @spec hash(keyword()) :: String.t()
   def hash(questions) when is_list(questions) do
@@ -165,6 +173,39 @@ defmodule SabrJev.Questions do
     if Enum.sort(Map.keys(sample)) == Enum.sort(expected),
       do: :ok,
       else: {:error, {:invalid_card, "sample keys must be exactly #{inspect(expected)}"}}
+  end
+
+  defp validate_mode(:retrospective), do: {:ok, :retrospective}
+  defp validate_mode(:prospective), do: {:ok, :prospective}
+  defp validate_mode(other), do: {:error, {:invalid_mode, other}}
+
+  defp noul_for(card, role, :retrospective), do: validate_oracle_marker(card, role)
+  defp noul_for(card, role, :prospective), do: validate_prospective_marker(card, role)
+
+  # A prospective prediction is asked before the outcome season exists, so the
+  # card carries no oracle. Everything else still holds: the signal being
+  # predicted must be present and the sample must be qualified, otherwise the
+  # question would be unanswerable rather than merely uncertain.
+  defp validate_prospective_marker(card, role) do
+    metric = if role == "batter", do: "ops_plus", else: "fip"
+    current_value = card["judgment_state"]["metrics"][metric]
+
+    with :ok <- no_realized_oracle(card),
+         true <-
+           card["sample"]["qualified"] ||
+             {:error, {:invalid_prospective_marker, "current sample must be qualified"}},
+         true <-
+           finite_number?(current_value) ||
+             {:error, {:invalid_prospective_marker, "current target metric must be available"}} do
+      {:ok, true}
+    end
+  end
+
+  defp no_realized_oracle(%{"oracle" => nil}), do: :ok
+
+  defp no_realized_oracle(_card) do
+    {:error,
+     {:invalid_prospective_marker, "a prospective prediction cannot carry a realized T+1 oracle"}}
   end
 
   defp validate_oracle_marker(card, role) do

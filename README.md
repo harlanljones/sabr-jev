@@ -33,12 +33,12 @@ prospective evaluation protocol instead of vibes.
 
 | Check | Result |
 |---|---|
-| Offline Elixir suite (`mix test`, no API key) | 111 passed |
+| Offline Elixir suite (`mix test`, no API key) | 133 passed |
 | Python ETL + metric suite | 23 passed |
 | `mix format --check-formatted`, `mix compile --warnings-as-errors` | clean |
 | ETL rebuild of `priv/data/cards.json` | byte-identical |
 | Live `/`, `/storylines`, `/about` | 200, content-checked |
-| Prospective accuracy | **pending by design** — infrastructure only, first enrollable cohort 2026→2027 |
+| Prospective accuracy | **pending by design** — no cohort outcome exists yet. The enrollable cohort is the newest pinned season (2025 → 2026); that window closed 2026-01-01, and the 2026 → 2027 window opens when a 2026 source is pinned and closes 2027-01-01 |
 | Latch thresholds | **provisional, revised v2** (act 0.65 / review 0.45; Noul act/review decoupled from the season read) |
 
 ## Use cases
@@ -49,7 +49,7 @@ prospective evaluation protocol instead of vibes.
 | Story explorer | Start at `/storylines`: 37 famous 2020–2025 seasons with hook lines and real verdict chips, filtered by position/season/verdict, deep-linked into the workbench |
 | Skeptic / auditor | Read `/backtest`: every recorded next-season projection scored against what actually happened — per-role Brier vs baseline, reliability buckets, per-pair losses |
 | Developer | `SabrJev.Catalog` is the trusted boundary: exact keys, `id == role:player_id:year`, outer metrics == judgment-state metrics, PA/IP == sample value — mutations rejected before any Jev use |
-| Researcher | Prospective pair (`mix sabr.capture` / `mix sabr.evaluate`) freezes predictions before the outcome season under a Jan-1 cutoff; Brier by role, baselines, reliability buckets, pending-not-negative outcomes |
+| Researcher | Prospective pair (`mix sabr.record --prospective` / `mix sabr.capture` / `mix sabr.evaluate`) freezes a prediction before its outcome season under a Jan-1 cutoff: the Noul is recorded without an oracle marker, the ledger line carries `mode: prospective`, and scoring refuses anything that is not; Brier by role, baselines, reliability buckets, pending-not-negative outcomes |
 
 ## Design
 

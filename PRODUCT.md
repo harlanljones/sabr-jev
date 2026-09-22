@@ -31,9 +31,11 @@ numbers; this one renders a checkable verdict.
 ## Operating Context
 
 Frozen Lahman inputs (latest season 2025) plus a static wOBA weights file;
-no live scraper. Twelve cards and ten recordings ship today; the storyline
+no live scraper. Fifty cards and 48 recordings ship today; the storyline
 surface draws seasons from 2020–2025 present in the pinned source. Oracle
-(T+1) joins are retrospective eval-only panes, never judgment input.
+(T+1) joins are retrospective eval-only panes, never judgment input. The newest
+pinned season (2025) has no T+1 yet: it is the enrollable prospective cohort,
+and its window closed 2026-01-01.
 
 ## Capabilities and Constraints
 
@@ -43,7 +45,9 @@ surface draws seasons from 2020–2025 present in the pinned source. Oracle
   act/review only, underqualified samples never act, thresholds provisional.
 - OPS+ is always labeled "OPS+ (Sabr-Jev)"; footer cites Lahman and states
   no Fangraphs scrape in v1.
-- Deliverable for this round: static mockups, not app wiring.
+- Deliverable for this round: the live workbench, storylines, backtest and about
+  surfaces, all reading frozen artifacts; prospective capture is CLI-only and
+  makes no accuracy claim.
 
 ## Brand Commitments
 
@@ -52,8 +56,9 @@ confidence gating as the most prominent element. Existing name Sabr-Jev.
 
 ## Evidence on Hand
 
-- Live workbench at `/` and formulas at `/about`; 12 cards in
-  `priv/data/cards.json`; 10 recordings in `priv/jev/recordings/`.
+- Live workbench at `/` and formulas at `/about`; 50 cards in
+  `priv/data/cards.json`; 48 recordings in `priv/jev/recordings/` (plus the
+  separate `priv/jev/recordings/prospective/` for cohort-window predictions).
 - Pinned source CSVs under `data/lahman/` (ignored bulk) for verifying
   player-season availability.
 - State absences: no screenshots, no testimonials, no benchmarks beyond the

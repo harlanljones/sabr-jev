@@ -2,6 +2,7 @@ defmodule SabrJevWeb.AboutLive do
   use SabrJevWeb, :live_view
 
   alias SabrJev.Catalog
+  alias SabrJev.Prospective
 
   @impl true
   def mount(_params, _session, socket) do
@@ -117,11 +118,11 @@ defmodule SabrJevWeb.AboutLive do
       <section aria-labelledby="eval-heading">
         <h2 id="eval-heading">Evaluation status</h2>
         <p>Prospective evaluation: accuracy pending. No accuracy claim is made.</p>
+        <p>{Prospective.retrospective_note()}</p>
         <p>
-          2024 → 2025 oracle joins are retrospective plumbing only. Capture must
-          precede the outcome season (conservative January 1 cutoff). The local
-          ledger is append-only and hash chained but cannot prove external capture
-          time.
+          {Prospective.window_note()} Capture must precede the outcome season (conservative January 1 cutoff).
+          The local ledger is append-only and hash chained but cannot prove
+          external capture time.
         </p>
       </section>
 

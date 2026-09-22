@@ -184,6 +184,13 @@ defmodule SabrJevWeb.WorkbenchLiveTest do
     assert html =~ "Lahman"
     assert html =~ "no Fangraphs scrape in v1"
     assert html =~ "Evaluation status"
+
+    # The cohort copy is derived from the frozen pins, so it cannot go stale the
+    # way a hand-written season range did. HEEx escapes ">" in text nodes.
+    assert html =~ SabrJev.Prospective.retrospective_note()
+    assert html =~ escaped(SabrJev.Prospective.window_note())
+
+    refute html =~ "2024 → 2025 joins"
   end
 
   test "about page documents formulas, provenance and pending evaluation", %{conn: conn} do
@@ -197,7 +204,20 @@ defmodule SabrJevWeb.WorkbenchLiveTest do
     assert html =~ "Lahman"
     assert html =~ "no Fangraphs scrape in v1"
 
+    # Derived cohort copy, including the closed window and the next cohort.
+    assert html =~ SabrJev.Prospective.retrospective_note()
+
+    assert html =~
+             escaped(
+               "Cohort #{SabrJev.Prospective.enrollable_year()} -> " <>
+                 "#{SabrJev.Prospective.outcome_year()} closed #{SabrJev.Prospective.cutoff_iso()}"
+             )
+
+    refute html =~ "2024 → 2025 oracle joins"
+
     {:ok, _view, live_html} = live(conn)
     assert live_html =~ "Teams.BPF"
   end
+
+  defp escaped(text), do: text |> Phoenix.HTML.html_escape() |> Phoenix.HTML.safe_to_string()
 end

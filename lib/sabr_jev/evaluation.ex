@@ -14,7 +14,8 @@ defmodule SabrJev.Evaluation do
   end
 
   defp do_score(entries, realized, baseline) do
-    with :ok <- check_realized(entries, realized),
+    with :ok <- check_prospective_mode(entries),
+         :ok <- check_realized(entries, realized),
          :ok <- check_cutoff_uniformity(entries) do
       {scored, pending} = Enum.split_with(entries, &Map.has_key?(realized, &1["card_id"]))
       by_role = group_brier(scored, realized, baseline)
@@ -30,6 +31,15 @@ defmodule SabrJev.Evaluation do
         }
       }
     end
+  end
+
+  # Only prospective lines are scoreable. A line derived from a retrospective
+  # recording would score a judgment made with the outcome already known, which
+  # is the leakage the capture cutoff exists to prevent in the first place.
+  defp check_prospective_mode(entries) do
+    if Enum.all?(entries, &(Map.get(&1, "mode") == "prospective")),
+      do: :ok,
+      else: {:error, :not_prospective_ledger_line}
   end
 
   # A ledger captured across two different cohort windows must be scored

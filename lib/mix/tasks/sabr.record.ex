@@ -1,10 +1,13 @@
 defmodule Mix.Tasks.Sabr.Record do
   use Mix.Task
 
-  @shortdoc "Records immutable live Jev judgments for historical demo cards"
+  @shortdoc "Records immutable live Jev judgments for demo cards"
   @requirements ["app.start"]
   @default_catalog "priv/data/cards.json"
   @default_output "priv/jev/recordings"
+  # Prospective predictions live outside the frozen retrospective recordings: a
+  # card can have both, and neither may overwrite the other.
+  @prospective_output "priv/jev/recordings/prospective"
   @credential_path Path.expand("~/.hermes/jev/key")
   @safe_id ~r/\A[A-Za-z0-9][A-Za-z0-9._-]*(?::[A-Za-z0-9][A-Za-z0-9._-]*)*\z/
 
@@ -12,20 +15,21 @@ defmodule Mix.Tasks.Sabr.Record do
   def run(args, runtime_opts \\ []) do
     {opts, rest, invalid} =
       OptionParser.parse(args,
-        strict: [card: :keep, output: :string, catalog: :string],
+        strict: [card: :keep, output: :string, catalog: :string, prospective: :boolean],
         aliases: [c: :card, o: :output]
       )
 
     if rest != [] or invalid != [],
-      do: Mix.raise("invalid arguments; use --card ID and/or --output DIR")
+      do: Mix.raise("invalid arguments; use --card ID and/or --output DIR and/or --prospective")
 
     catalog_path = opts[:catalog] || @default_catalog
-    output_dir = opts[:output] || @default_output
+    mode = if opts[:prospective], do: :prospective, else: :retrospective
+    output_dir = opts[:output] || default_output(mode)
     requested_ids = Keyword.get_values(opts, :card)
     reject_duplicate_selections!(requested_ids)
 
     catalog = read_catalog!(catalog_path)
-    cards = select_cards!(catalog["cards"], requested_ids)
+    cards = select_cards!(catalog["cards"], requested_ids, mode)
     destinations = prepare_destinations!(output_dir, cards)
 
     existing = destinations |> Enum.map(& &1.path) |> Enum.filter(&File.exists?/1)
@@ -46,7 +50,7 @@ defmodule Mix.Tasks.Sabr.Record do
 
     entries =
       Enum.map(destinations, fn destination ->
-        case evaluator.(client, destination.card, source_lineage: lineage) do
+        case evaluator.(client, destination.card, source_lineage: lineage, mode: mode) do
           {:ok, record} ->
             Map.put(destination, :record, record)
 
@@ -422,17 +426,52 @@ defmodule Mix.Tasks.Sabr.Record do
     end
   end
 
-  defp select_cards!(cards, []) do
+  defp select_cards!(cards, [], :retrospective) do
     selected = Enum.filter(cards, &is_map(&1["oracle"]))
     if selected == [], do: Mix.raise("catalog has no historical T+1 demo cards"), else: selected
   end
 
-  defp select_cards!(cards, ids) do
+  defp select_cards!(cards, [], :prospective) do
+    year = SabrJev.Prospective.enrollable_year()
+
+    selected = Enum.filter(cards, &(is_nil(&1["oracle"]) and &1["year"] == year))
+
+    if selected == [],
+      do: Mix.raise("catalog has no #{year} cards eligible for a prospective recording"),
+      else: selected
+  end
+
+  defp select_cards!(cards, ids, mode) do
     by_id = Map.new(cards, &{&1["id"], &1})
     missing = Enum.reject(ids, &Map.has_key?(by_id, &1))
     if missing != [], do: Mix.raise("unknown card ids: #{Enum.join(missing, ", ")}")
-    Enum.map(ids, &by_id[&1])
+    Enum.map(ids, &eligible_for_mode!(by_id[&1], mode))
   end
+
+  defp eligible_for_mode!(card, :retrospective), do: card
+
+  # A prospective prediction is only meaningful before its outcome season is
+  # resolved, so the task refuses to record one for a season whose T+1 already
+  # exists in the pins rather than writing an artifact that can never be captured.
+  defp eligible_for_mode!(card, :prospective) do
+    year = SabrJev.Prospective.enrollable_year()
+
+    if card["year"] == year and is_nil(card["oracle"]) do
+      card
+    else
+      Mix.raise(
+        "card #{card["id"]} is not eligible for a prospective recording: only " <>
+          "#{year} cards with no realized T+1 oracle are enrollable"
+      )
+    end
+  end
+
+  @doc false
+  @spec prospective_output_dir() :: Path.t()
+  def prospective_output_dir, do: @prospective_output
+
+  defp default_output(:prospective), do: @prospective_output
+  defp default_output(:retrospective), do: @default_output
 
   # Credential material is resolved only inside the running task and is never printed.
   defp api_key! do
