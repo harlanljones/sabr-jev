@@ -210,10 +210,11 @@ defmodule SabrJevWeb.WorkbenchLive do
         </h2>
         <.headlines card={@card} />
         <.shape card={@card} />
+        <.evidence_panel card={@card} previous_cards={@previous_cards} />
         <.sample card={@card} />
         <.warnings card={@card} />
         <.judgment card={@card} judgment={@judgment} judgment_error={@judgment_error} />
-        <.oracle card={@card} />
+        <.oracle card={@card} judgment={@judgment} />
       </section>
 
       <section
@@ -352,6 +353,7 @@ defmodule SabrJevWeb.WorkbenchLive do
   defp assign_card(socket, nil) do
     socket
     |> assign(:card, nil)
+    |> assign(:previous_cards, [])
     |> assign(:judgment, nil)
     |> assign(:judgment_error, nil)
   end
@@ -359,22 +361,27 @@ defmodule SabrJevWeb.WorkbenchLive do
   defp assign_card(socket, id) do
     case Catalog.get(socket.assigns.catalog, id) do
       {:ok, card} ->
+        previous = fetch_previous_cards(socket.assigns.catalog, card)
+
         case Catalog.judgment(card) do
           {:ok, judgment} ->
             socket
             |> assign(:card, card)
+            |> assign(:previous_cards, previous)
             |> assign(:judgment, judgment)
             |> assign(:judgment_error, nil)
 
           {:error, :no_recording} ->
             socket
             |> assign(:card, card)
+            |> assign(:previous_cards, previous)
             |> assign(:judgment, nil)
             |> assign(:judgment_error, :no_recording)
 
           {:error, reason} ->
             socket
             |> assign(:card, card)
+            |> assign(:previous_cards, previous)
             |> assign(:judgment, nil)
             |> assign(:judgment_error, reason)
         end
@@ -382,6 +389,19 @@ defmodule SabrJevWeb.WorkbenchLive do
       {:error, _} ->
         socket
     end
+  end
+
+  defp fetch_previous_cards(catalog, %{"role" => role, "player_id" => pid, "year" => year})
+       when is_map(catalog) do
+    [year - 1, year - 2]
+    |> Enum.flat_map(fn y ->
+      id = "#{role}:#{pid}:#{y}"
+
+      case Catalog.get(catalog, id) do
+        {:ok, prev} -> [prev]
+        _ -> []
+      end
+    end)
   end
 
   defp headlines(%{card: %{"role" => "batter"}} = assigns) do
@@ -463,6 +483,97 @@ defmodule SabrJevWeb.WorkbenchLive do
     """
   end
 
+  defp evidence_panel(%{previous_cards: []} = assigns) do
+    ~H"""
+    <p class="lens-note" data-evidence="none">
+      No previous season in frozen catalog for evidence comparison.
+    </p>
+    """
+  end
+
+  defp evidence_panel(assigns) do
+    ~H"""
+    <section aria-labelledby="evidence-heading" class="evidence" data-evidence="true">
+      <h3 id="evidence-heading">Evidence — previous season(s) in catalog</h3>
+      <p class="lens-note">For context, not model input. The model saw only this season's numbers.</p>
+      <table class="probabilities" aria-label="Evidence from previous seasons">
+        <thead>
+          <tr>
+            <th scope="col">Metric</th>
+            <th scope="col">{@card["year"]} (this season)</th>
+            <th :for={prev <- @previous_cards} scope="col">{prev["year"]} ({prev["player_id"]})</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr :if={@card["role"] == "batter"}>
+            <th scope="row">OPS+ (Sabr-Jev)</th><td>{f1(@card["metrics"]["ops_plus"])}</td><td :for={
+              prev <- @previous_cards
+            }>
+              {f1(prev["metrics"]["ops_plus"])}
+            </td>
+          </tr>
+          <tr :if={@card["role"] == "batter"}>
+            <th scope="row">wOBA</th><td>{fmt(@card["metrics"]["woba"])}</td><td :for={
+              prev <- @previous_cards
+            }>
+              {fmt(prev["metrics"]["woba"])}
+            </td>
+          </tr>
+          <tr :if={@card["role"] == "batter"}>
+            <th scope="row">PA</th><td>{fmt(@card["metrics"]["pa"])}</td><td :for={
+              prev <- @previous_cards
+            }>
+              {fmt(prev["metrics"]["pa"])}
+            </td>
+          </tr>
+          <tr :if={@card["role"] == "batter"}>
+            <th scope="row">ISO</th><td>{fmt(@card["metrics"]["iso"])}</td><td :for={
+              prev <- @previous_cards
+            }>
+              {fmt(prev["metrics"]["iso"])}
+            </td>
+          </tr>
+          <tr :if={@card["role"] == "batter"}>
+            <th scope="row">BB% / K%</th><td>
+              {fmt(@card["metrics"]["bb_pct"])} / {fmt(@card["metrics"]["k_pct"])}
+            </td><td :for={prev <- @previous_cards}>
+              {fmt(prev["metrics"]["bb_pct"])} / {fmt(prev["metrics"]["k_pct"])}
+            </td>
+          </tr>
+          <tr :if={@card["role"] == "pitcher"}>
+            <th scope="row">FIP</th><td>{f2(@card["metrics"]["fip"])}</td><td :for={
+              prev <- @previous_cards
+            }>
+              {f2(prev["metrics"]["fip"])}
+            </td>
+          </tr>
+          <tr :if={@card["role"] == "pitcher"}>
+            <th scope="row">ERA</th><td>{f2(@card["metrics"]["era"])}</td><td :for={
+              prev <- @previous_cards
+            }>
+              {f2(prev["metrics"]["era"])}
+            </td>
+          </tr>
+          <tr :if={@card["role"] == "pitcher"}>
+            <th scope="row">IP</th><td>{fmt(@card["metrics"]["ip"])}</td><td :for={
+              prev <- @previous_cards
+            }>
+              {fmt(prev["metrics"]["ip"])}
+            </td>
+          </tr>
+          <tr :if={@card["role"] == "pitcher"}>
+            <th scope="row">K-BB%</th><td>{fmt(@card["metrics"]["k_bb_pct"])}</td><td :for={
+              prev <- @previous_cards
+            }>
+              {fmt(prev["metrics"]["k_bb_pct"])}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+    """
+  end
+
   defp sample(assigns) do
     ~H"""
     <p class="sample" data-sample="true">
@@ -519,12 +630,12 @@ defmodule SabrJevWeb.WorkbenchLive do
   defp judgment(assigns) do
     ~H"""
     <section aria-labelledby="judgment-heading" class="judgment" data-latch={@judgment.decision.route}>
-      <h3 id="judgment-heading">
-        The verdict: {@judgment.decision.route}
-        <span class="provisional">provisional thresholds</span>
-      </h3>
+      <.read_hero judgment={@judgment} />
       <p class="verdict-line" data-verdict={@judgment.decision.route}>
         {verdict_line(@judgment.decision.route)}
+      </p>
+      <p class="lens-note">
+        Verdict reflects the model's read of this season alone. Outcome in the Oracle pane is historical fact — they are independent and may not align.
       </p>
       <details class="audit" data-audit="true">
         <summary>Shows its work — audit trail</summary>
@@ -562,6 +673,54 @@ defmodule SabrJevWeb.WorkbenchLive do
         card={@card}
       />
     </section>
+    """
+  end
+
+  defp read_hero(%{judgment: %{record: %{"answers" => answers}}} = assigns) do
+    season = answers["season_read"]
+    confidence = answers["confidence_in_signal"]
+
+    assigns =
+      assigns
+      |> assign(:season_read, season)
+      |> assign(:confidence_signal, confidence)
+
+    ~H"""
+    <div class="read-hero" data-read-hero="true">
+      <div class="read-main">
+        <p class="eyebrow">Model read</p>
+        <h3 id="judgment-heading" class="read-title">
+          {String.replace(to_string(@season_read["choice"]), "_", " ")}
+          <span class="provisional">provisional thresholds</span>
+        </h3>
+        <p class="read-reason">{@season_read["description"]}</p>
+        <p class="read-meta">
+          Confidence {pct(@season_read["confidence"])} · {pct(@confidence_signal["confidence"])} signal · {@confidence_signal[
+            "label"
+          ]}
+        </p>
+        <p class="lens-note">{@confidence_signal["description"]}</p>
+      </div>
+      <dl class="read-stats">
+        <div>
+          <dt>Signal</dt><dd>
+            {@confidence_signal["label"]} ({pct(@confidence_signal["confidence"])})
+          </dd>
+        </div>
+        <div>
+          <dt>Read confidence</dt><dd>{pct(@season_read["confidence"])}</dd>
+        </div>
+      </dl>
+    </div>
+    """
+  end
+
+  defp read_hero(assigns) do
+    ~H"""
+    <h3 id="judgment-heading">
+      The verdict: {@judgment.decision.route}
+      <span class="provisional">provisional thresholds</span>
+    </h3>
     """
   end
 
@@ -643,6 +802,28 @@ defmodule SabrJevWeb.WorkbenchLive do
     """
   end
 
+  defp oracle(%{judgment: nil} = assigns) do
+    ~H"""
+    <section
+      aria-labelledby="oracle-heading"
+      class="oracle oracle-present"
+      data-oracle="present"
+    >
+      <h3 id="oracle-heading">Oracle — retrospective eval-only pane, never sent to Jev</h3>
+      <.oracle_table card={@card} judgment={@judgment} />
+      <p class="lens-note">
+        Target: {@card["oracle"]["target"]} ·
+        Label: {to_string(@card["oracle"]["label"])} ·
+        Season: {@card["oracle"]["year"]}
+      </p>
+      <p class="lens-note">
+        <strong>Outcome ≠ recommendation.</strong>
+        Change flag shows what historically happened; the read above shows what the model recommended at the time. No correlation is implied.
+      </p>
+    </section>
+    """
+  end
+
   defp oracle(assigns) do
     ~H"""
     <section
@@ -651,12 +832,17 @@ defmodule SabrJevWeb.WorkbenchLive do
       data-oracle="present"
     >
       <h3 id="oracle-heading">Oracle — retrospective eval-only pane, never sent to Jev</h3>
-      <.oracle_table card={@card} />
+      <.oracle_table card={@card} judgment={@judgment} />
       <p class="lens-note">
         Target: {@card["oracle"]["target"]} ·
         Label: {to_string(@card["oracle"]["label"])} ·
         Season: {@card["oracle"]["year"]}
       </p>
+      <p class="lens-note">
+        <strong>Outcome ≠ recommendation.</strong>
+        Change flag shows what historically happened; the read above shows what the model recommended at the time. No correlation is implied.
+      </p>
+      <.oracle_projection judgment={@judgment} card={@card} />
     </section>
     """
   end
@@ -669,7 +855,7 @@ defmodule SabrJevWeb.WorkbenchLive do
           <th scope="col">Metric</th>
           <th scope="col">{@card["year"]}</th>
           <th scope="col">{@card["oracle"]["year"]}</th>
-          <th scope="col">Change</th>
+          <th scope="col">Change (actual outcome)</th>
         </tr>
       </thead>
       <tbody>
@@ -692,7 +878,7 @@ defmodule SabrJevWeb.WorkbenchLive do
           <th scope="col">Metric</th>
           <th scope="col">{@card["year"]}</th>
           <th scope="col">{@card["oracle"]["year"]}</th>
-          <th scope="col">Change</th>
+          <th scope="col">Change (actual outcome)</th>
         </tr>
       </thead>
       <tbody>
@@ -704,6 +890,25 @@ defmodule SabrJevWeb.WorkbenchLive do
         </tr>
       </tbody>
     </table>
+    """
+  end
+
+  defp oracle_projection(%{judgment: nil} = assigns), do: ~H""
+
+  defp oracle_projection(%{judgment: %{record: %{"answers" => answers}}, card: %{"role" => role}} = assigns) do
+    noul_id = SabrJev.Questions.noul_id(role)
+    noul = answers[noul_id]
+
+    assigns = assign(assigns, :noul, noul)
+
+    ~H"""
+    <div :if={@noul} class="oracle-projection" data-oracle-projection="true">
+      <p class="lens-note">
+        At the time, the model projected <strong>{pct(@noul["noul"])} chance</strong>
+        of <code>{@noul["type"]}</code>
+        change. Actual outcome is in the table above.
+      </p>
+    </div>
     """
   end
 

@@ -184,6 +184,28 @@ details.audit dt {
 details.audit dd { margin: 0 0 0.5rem; }
 .answer-block h4 { font-family: system-ui, sans-serif; font-size: 0.875rem; margin-bottom: 0; }
 
+/* Read hero: larger reasoning component. */
+.read-hero {
+  display: grid;
+  grid-template-columns: 1.6fr 0.9fr;
+  gap: 1rem 2rem;
+  border: 2px solid currentColor;
+  padding: 1rem 1.25rem;
+  margin: 1rem 0;
+  background: #ece7d7;
+}
+.read-title { font-size: clamp(1.8rem, 4vw, 2.6rem); margin: 0.25rem 0; text-transform: capitalize; }
+.read-reason { font-size: 1.05rem; line-height: 1.6; margin: 0.5rem 0; }
+.read-meta { font-family: system-ui, sans-serif; font-size: 0.85rem; margin: 0.25rem 0; }
+.read-stats { display: grid; gap: 0.5rem; align-content: start; }
+.read-stats dt { font-family: system-ui, sans-serif; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; }
+.read-stats dd { margin: 0; font-size: 1rem; font-variant-numeric: tabular-nums; }
+@media (max-width: 40rem) { .read-hero { grid-template-columns: 1fr; } }
+
+/* Evidence panel: previous season context for the top table. */
+.evidence { border: 1px solid #b0b4a8; padding: 1rem; margin: 1rem 0; }
+.evidence h3 { font-size: 1.05rem; margin: 0 0 0.25rem; }
+
 /* Oracle: dashed eval-only pane, visually separate from judgment state. */
 .oracle { border: 1px dashed #626b60; padding: 1rem; margin-top: 1.5rem; }
 .oracle dl { display: grid; gap: 0.25rem 2rem; margin: 0.5rem 0 0; }
